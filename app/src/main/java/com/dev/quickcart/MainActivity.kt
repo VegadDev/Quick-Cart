@@ -21,6 +21,7 @@ import com.dev.quickcart.navigation.AppScreens
 import com.dev.quickcart.navigation.NavigationCommand
 import com.dev.quickcart.navigation.NavigationEvent
 import com.dev.quickcart.navigation.Navigator
+import com.dev.quickcart.navigation.handleNavigation
 import com.dev.quickcart.navigation.screens
 import com.dev.quickcart.ui.theme.AppTheme
 import com.dev.quickcart.ui.theme.QuickCartTheme
@@ -53,42 +54,7 @@ fun QuickCartNav(
     )
 
     LaunchedEffect(navigationCommands) {
-        when (val command = navigationCommands.command) {
-            NavigationCommand.Back -> {
-                val canNavigateUp = navController.previousBackStackEntry != null
-                if (canNavigateUp) {
-                    navController.navigateUp()
-                } else {
-                    Log.d("Nav", "Cannot navigate up: No back stack entry available")
-                }
-            }
-
-            is NavigationCommand.RouteCommand -> {
-                when (command) {
-                    is NavigationCommand.To -> navController.navigate(command.routeWithArgs)
-
-                    is NavigationCommand.ToAndClear -> {
-                        navController.navigate(command.routeWithArgs) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                inclusive = false
-                            }
-                        }
-                    }
-
-                    is NavigationCommand.ToAndClearAll -> {
-                        navController.navigate(command.routeWithArgs) {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    }
-
-                    else -> {
-                        Log.e("Nav", "Unhandled Navigation Command: $command")
-                    }
-                }
-            }
-
-            NavigationCommand.Idle -> {}
-        }
+        navController.handleNavigation(navigationCommands.command)
     }
 
     NavHost(
@@ -108,4 +74,3 @@ fun QuickCartNav(
         }
     }
 }
-

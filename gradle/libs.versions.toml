@@ -18,6 +18,7 @@ room = "2.5.2"         # Room Database
 ksp = "2.0.0-1.0.21"
 navigationCompose = "2.7.7"
 jetpack_compose_components = "1.0.0"
+navigation-animation = "0.36.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,6 +48,7 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 ksp-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 jetpack_compose_components = { module = "com.github.Tanish-Ranjan:jetpack_compose_components", version.ref = "jetpack_compose_components" }
+navigation-animation = { group = "com.google.accompanist", name = "accompanist-navigation-animation", version.ref = "navigation-animation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

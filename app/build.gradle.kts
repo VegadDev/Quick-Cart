@@ -81,6 +81,9 @@ dependencies {
     ksp(libs.ksp.room.compiler) // Room Compiler
 
     implementation(libs.jetpack.compose.components)
+    implementation(libs.navigation.animation)
+
+    implementation ("com.github.ibrahimsn98:SmoothBottomBar:1.7.9")
 
 
 }

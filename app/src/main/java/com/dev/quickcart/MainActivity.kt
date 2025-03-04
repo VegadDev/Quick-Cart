@@ -1,11 +1,15 @@
 package com.dev.quickcart
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,19 +34,22 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             QuickCartTheme {
-                Surface(modifier = Modifier.fillMaxSize(), color = AppTheme.colors.background) {
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    containerColor = AppTheme.colors.background,
+                ) {
                     QuickCartNav()
                 }
             }
         }
     }
 }
-
 
 @Composable
 fun QuickCartNav(
@@ -59,7 +66,11 @@ fun QuickCartNav(
 
     NavHost(
         navController = navController,
-        startDestination = AppScreens.HomeScreen.route
+        startDestination = AppScreens.IntroScreen.route,
+        enterTransition = { fadeIn(animationSpec = tween(600)) },
+        exitTransition = { fadeOut(animationSpec = tween(600)) },
+        popEnterTransition = { fadeIn(animationSpec = tween(600)) },
+        popExitTransition = { fadeOut(animationSpec = tween(600)) }
     ) {
         screens.forEach { screen ->
             composable(
@@ -67,10 +78,15 @@ fun QuickCartNav(
                 arguments = listOf(navArgument("json") {
                     type = NavType.StringType
                     defaultValue = ""
-                })
+                }),
+                enterTransition = { fadeIn(animationSpec = tween(600)) },
+                exitTransition = { fadeOut(animationSpec = tween(600)) },
+                popEnterTransition = { fadeIn(animationSpec = tween(600)) },
+                popExitTransition = { fadeOut(animationSpec = tween(600)) }
             ) { backStackEntry ->
                 screen.content(backStackEntry)
             }
         }
     }
 }
+

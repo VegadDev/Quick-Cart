@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun CartScreen(interActor: CartInterActor) {
+fun CartScreen(interActor: CartInterActor = DefaultCartInterActor) {
 
     Text("Cart Screen")
 

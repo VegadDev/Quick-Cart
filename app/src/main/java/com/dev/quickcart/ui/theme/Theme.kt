@@ -10,8 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 
 private val lightColorScheme = lightColorScheme(
     primary = customAppColorsLight.primary,
@@ -39,7 +41,7 @@ private val darkColorScheme = darkColorScheme(
 
 
 val LocalAppColor = compositionLocalOf { customAppColorsLight }
-
+val LocalAppTypography = compositionLocalOf { AppTypography(Density(3.0F, 1.0F)) }
 
 object AppTheme {
 
@@ -47,6 +49,11 @@ object AppTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalAppColor.current
+
+    val textStyles: AppTypography
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalAppTypography.current
 
     val activity: Activity?
         @Composable
@@ -79,12 +86,15 @@ fun QuickCartTheme(
         else -> lightColorScheme
     }
     val quickCartColors = if (darkTheme) customAppColorsDark else customAppColorsLight
+    val appTypography = remember { AppTypography(density = density) }
 
     MaterialTheme(
         colorScheme = colorScheme,
+        typography = Typography,
         content = {
             CompositionLocalProvider(
                 LocalAppColor provides quickCartColors,
+                LocalAppTypography provides appTypography,
             ) {
                 content()
             }

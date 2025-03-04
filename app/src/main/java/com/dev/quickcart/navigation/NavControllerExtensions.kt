@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.navigation.NavController
 
 fun NavController.handleNavigation(command: NavigationCommand) {
+
     when (command) {
         NavigationCommand.Back -> {
             if (previousBackStackEntry != null) navigateUp()
@@ -30,4 +31,5 @@ fun NavController.handleNavigation(command: NavigationCommand) {
         }
         NavigationCommand.Idle -> Unit
     }
+
 }

@@ -1,27 +1,23 @@
-package com.dev.quickcart.screens.profile
+package com.dev.quickcart.login.signup_screen
 
 import androidx.lifecycle.ViewModel
 import com.dev.quickcart.navigation.AppScreens
 import com.dev.quickcart.navigation.NavigationCommand
 import com.dev.quickcart.navigation.Navigator
-import com.dev.quickcart.screens.cart.CartInterActor
+import com.dev.quickcart.screens.settings.SettingInterActor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 
 @HiltViewModel
-class ProfileViewModel
+class SignupViewModel
 @Inject
 constructor(
     private val navigator: Navigator
 ) : ViewModel() {
 
-    val interActor = object : ProfileInterActor {
+    val interActor = object : SignupInterActor {
 
-        override fun gotoHome() {
-            navigator.navigate(NavigationCommand.To(AppScreens.SettingScreen.route))
-        }
 
     }
-
 }

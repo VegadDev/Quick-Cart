@@ -4,3 +4,7 @@ interface CartInterActor {
 
 
 }
+
+object DefaultCartInterActor: CartInterActor {
+
+}

@@ -1,8 +1,13 @@
 package com.dev.quickcart.screens.common
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,15 +22,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dev.quickcart.R
 import com.dev.quickcart.ui.theme.AppTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun CustomCard(
@@ -34,13 +43,15 @@ fun CustomCard(
     cardCorner: Int = 10,
     onClick: () -> Unit = {},
     isClickable: Boolean = true,
+    border: BorderStroke? = null,
     function: @Composable () -> Unit = {},
 ) {
 
     Card(
         shape = RoundedCornerShape(cardCorner.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
+        elevation = CardDefaults.cardElevation(5.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),
+        border = border,
         modifier = modifier
             .clip(RoundedCornerShape(cardCorner.dp))
             .then(
@@ -57,7 +68,8 @@ fun CustomIcon(
     modifier: Modifier,
     imageModifier: Modifier,
     isCircle: Boolean = true,
-    contentScale: ContentScale = ContentScale.Fit
+    contentScale: ContentScale = ContentScale.Fit,
+    colorFilter: ColorFilter? = null
 ) {
 
     Box(
@@ -73,7 +85,8 @@ fun CustomIcon(
             painter = painterResource(id = icon),
             contentDescription = null,
             modifier = imageModifier.fillMaxSize(),
-            contentScale = contentScale
+            contentScale = contentScale,
+            colorFilter = colorFilter
         )
 
     }
@@ -113,6 +126,76 @@ fun MyDivider(modifier: Modifier = Modifier) {
         color = Color.LightGray
     )
 }
+
+
+@Composable
+fun NewCard(
+    modifier: Modifier = Modifier,
+    cardWidth: Int = 0,
+    cardHeight: Int = 0,
+    cardCorner: Int = 15,
+    onClick: () -> Unit = {},
+    cardColor: Color = AppTheme.colors.cardBackgroundColor,
+    function: @Composable () -> Unit = {},
+) {
+    var isPressed by remember { mutableStateOf(false) }
+
+    // Animating offset values for smooth movement
+    val offsetX by animateDpAsState(
+        targetValue = if (isPressed) 6.dp else 0.dp,
+        animationSpec = tween(durationMillis = 150), label = "offsetX"
+    )
+    val offsetY by animateDpAsState(
+        targetValue = if (isPressed) 6.dp else 0.dp,
+        animationSpec = tween(durationMillis = 150), label = "offsetY"
+    )
+
+    Box(
+        modifier = modifier
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null, // Removes default ripple effect
+                onClick = {
+                    isPressed = true
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(150) // Keep the pressed effect for a short time
+                        isPressed = false
+                    }
+                    onClick()
+                }
+            )
+    ) {
+        val tempWidth = cardWidth + 5
+        val tempHeight = cardHeight + 5
+
+        Box(
+            modifier = Modifier
+                .width(tempWidth.dp)
+                .height(tempHeight.dp)
+                .padding(top = 5.dp, start = 5.dp)
+                .background(AppTheme.colors.black, shape = RoundedCornerShape(cardCorner.dp))
+        )
+
+
+        Box(
+            modifier = Modifier
+                .width(cardWidth.dp)
+                .height(cardHeight.dp)
+                .offset(x = offsetX, y = offsetY) // Moves smoothly when clicked
+                .border(
+                    border = BorderStroke(width = 2.dp, color = AppTheme.colors.black),
+                    shape = RoundedCornerShape(cardCorner.dp)
+                )
+                .background(cardColor, shape = RoundedCornerShape(cardCorner.dp)),
+
+            contentAlignment = Alignment.Center
+        ) {
+            function()
+        }
+    }
+}
+
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -171,9 +254,10 @@ fun AddressDropDownWidget(
         }
     }
 
-    CustomCard(
-        modifier = Modifier.width(140.dp),
-        cardCorner = 40,
+    NewCard(
+        cardWidth = 140,
+        cardHeight = 55,
+        cardCorner = 30 ,
         cardColor = AppTheme.colors.cardBackgroundColor,
         onClick = { showBottomSheet = true },
     ) {
@@ -202,20 +286,39 @@ fun AddressDropDownWidget(
         }
     }
 
+//    CustomCard(
+//        modifier = Modifier.width(140.dp),
+//        cardCorner = 40,
+//        cardColor = AppTheme.colors.cardBackgroundColor,
+//        onClick = { showBottomSheet = true },
+//    ) {
+//
+//    }
+
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomSearchBar(
+fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
     onSearch: () -> Unit,
+    modifier: Modifier = Modifier,
     cornerShape: Int = 8,
     hint: String = "Search...",
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
-    modifier: Modifier = Modifier,
+    prefix: @Composable (() -> Unit)? = null,
+    textStyle: TextStyle = AppTheme.textStyles.bold.regular,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    textFieldColors: TextFieldColors = TextFieldDefaults.colors(
+        focusedContainerColor = AppTheme.colors.cardBackgroundColor,
+        unfocusedContainerColor = AppTheme.colors.cardBackgroundColor,
+        disabledContainerColor = AppTheme.colors.cardBackgroundColor,
+        focusedIndicatorColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent,
+    )
 ) {
     TextField(
         value = value,
@@ -223,12 +326,17 @@ fun CustomSearchBar(
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp),
-        placeholder = { Text(text = hint) },
+        placeholder = { Text(
+            text = hint,
+            style = AppTheme.textStyles.extraBold.large,
+            color = AppTheme.colors.lightGray
+        ) },
         singleLine = true,
         shape = RoundedCornerShape(cornerShape.dp),
+        textStyle = textStyle,
         leadingIcon = leadingIcon,
         trailingIcon = {
-            if (value.isNotEmpty()) {
+            if(value.isNotEmpty()) {
                 IconButton(onClick = { onValueChange("") }) {
                     Icon(
                         imageVector = Icons.Default.Clear,
@@ -237,31 +345,27 @@ fun CustomSearchBar(
                 }
             }
         },
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = AppTheme.colors.cardBackgroundColor,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
-        ),
+        colors = textFieldColors,
         keyboardActions = KeyboardActions(
             onSearch = {
                 onSearch()
             }
         ),
-        keyboardOptions = KeyboardOptions.Default.copy(
-            imeAction = ImeAction.Search
-        )
+        keyboardOptions = keyboardOptions,
+        prefix = prefix
     )
 }
 
 
 @Composable
-fun AppButton(
+fun MyButton(
     text: String,
     modifier: Modifier = Modifier,
     textModifier: Modifier = Modifier,
     backgroundColor: Color = AppTheme.colors.primary,
     textColor: Color = AppTheme.colors.onPrimary,
     cornerShape: Int = 50,
+    icon: @Composable () -> Unit = {},
     onClick: () -> Unit = {}
 ) {
 
@@ -274,12 +378,20 @@ fun AppButton(
             containerColor = backgroundColor
         )
     ){
-        Text(
-            text = text,
-            style = AppTheme.textStyles.bold.large,
-            color = textColor,
-            modifier = textModifier
-        )
+
+        Row() {
+            icon()
+            Text(
+                text = text,
+                style = AppTheme.textStyles.bold.large,
+                color = textColor,
+                modifier = textModifier
+            )
+
+        }
+
+
+
     }
 
 

@@ -24,7 +24,7 @@ constructor(
 
     val interActor = object : HomeInterActor {
         override fun gotoProfile() {
-            navigator.navigate(NavigationCommand.To(AppScreens.ProfileScreen.route))
+            navigator.navigate(NavigationCommand.To(AppScreens.AddScreen.route))
         }
 
         override fun updateSearchInput(it: String) {

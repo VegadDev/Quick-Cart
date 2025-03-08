@@ -1,10 +1,5 @@
 package com.dev.quickcart.screens.cart
 
-interface CartInterActor {
+interface CartInterActor
 
-
-}
-
-object DefaultCartInterActor: CartInterActor {
-
-}
+object DefaultCartInterActor: CartInterActor

@@ -1,4 +1,4 @@
-package com.dev.quickcart.login.signup_screen
+package com.dev.quickcart.screens.login.intro
 
 import androidx.lifecycle.ViewModel
 import com.dev.quickcart.navigation.AppScreens
@@ -10,14 +10,18 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class SignupViewModel
+class IntroViewModel
 @Inject
 constructor(
     private val navigator: Navigator
 ) : ViewModel() {
 
-    val interActor = object : SignupInterActor {
-
+    val interActor = object : IntroInterActor {
+        override fun gotoLogin() {
+            navigator.navigate(NavigationCommand.To(AppScreens.LoginScreen.route))
+        }
 
     }
+
+
 }

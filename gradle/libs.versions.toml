@@ -8,6 +8,7 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
 composeBom = "2024.04.01"
+material3 = "1.3.1"
 
 lifecycle = "2.6.2"      # ViewModel & LiveData
 navigation = "2.7.5"     # Navigation Component
@@ -19,6 +20,10 @@ ksp = "2.0.0-1.0.21"
 navigationCompose = "2.7.7"
 jetpack_compose_components = "1.0.0"
 navigation-animation = "0.36.0"
+accompanist-pager = "0.36.0"
+gson = "2.10.1"
+coil = "2.7.0"
+lottie = "6.6.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,7 +39,7 @@ androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" , version.ref = "material3"}
 
 lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
@@ -49,6 +54,11 @@ ksp-room-compiler = { group = "androidx.room", name = "room-compiler", version.r
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 jetpack_compose_components = { module = "com.github.Tanish-Ranjan:jetpack_compose_components", version.ref = "jetpack_compose_components" }
 navigation-animation = { group = "com.google.accompanist", name = "accompanist-navigation-animation", version.ref = "navigation-animation" }
+accompanist-pager = { group = "com.google.accompanist", name = "accompanist-pager", version.ref = "accompanist-pager" }
+accompanist-pager-indicator = { group = "com.google.accompanist", name = "accompanist-pager-indicators", version.ref = "accompanist-pager" }
+lottie = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -66,11 +66,11 @@ fun QuickCartNav(
 
     NavHost(
         navController = navController,
-        startDestination = AppScreens.IntroScreen.route,
-        enterTransition = { fadeIn(animationSpec = tween(600)) },
-        exitTransition = { fadeOut(animationSpec = tween(600)) },
-        popEnterTransition = { fadeIn(animationSpec = tween(600)) },
-        popExitTransition = { fadeOut(animationSpec = tween(600)) }
+        startDestination = AppScreens.HomeScreen.route,
+        enterTransition = { fadeIn(animationSpec = tween(300)) },
+        exitTransition = { fadeOut(animationSpec = tween(300)) },
+        popEnterTransition = { fadeIn(animationSpec = tween(300)) },
+        popExitTransition = { fadeOut(animationSpec = tween(300)) }
     ) {
         screens.forEach { screen ->
             composable(
@@ -79,12 +79,20 @@ fun QuickCartNav(
                     type = NavType.StringType
                     defaultValue = ""
                 }),
-                enterTransition = { fadeIn(animationSpec = tween(600)) },
-                exitTransition = { fadeOut(animationSpec = tween(600)) },
-                popEnterTransition = { fadeIn(animationSpec = tween(600)) },
-                popExitTransition = { fadeOut(animationSpec = tween(600)) }
+                enterTransition = { fadeIn(animationSpec = tween(300)) },
+                exitTransition = { fadeOut(animationSpec = tween(300)) },
+                popEnterTransition = { fadeIn(animationSpec = tween(300)) },
+                popExitTransition = { fadeOut(animationSpec = tween(300)) }
             ) { backStackEntry ->
-                screen.content(backStackEntry)
+
+                AnimatedVisibility(
+                    visible = true,
+                    enter = fadeIn(animationSpec = tween(durationMillis = 300)),
+                    exit = fadeOut(animationSpec = tween(durationMillis = 300))
+                ) {
+                    screen.content(backStackEntry)
+                }
+
             }
         }
     }

@@ -1,9 +1,5 @@
 package com.dev.quickcart.screens.categories
 
-interface CategoriesInterActor {
-}
+interface CategoriesInterActor
 
-object DefaultCategoriesInterActor: CategoriesInterActor {
-
-
-}
+object DefaultCategoriesInterActor: CategoriesInterActor

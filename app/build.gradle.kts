@@ -83,6 +83,13 @@ dependencies {
     implementation(libs.jetpack.compose.components)
     implementation(libs.navigation.animation)
 
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.pager.indicator)
+
+    implementation(libs.gson)
+    implementation(libs.coil)
+    implementation(libs.lottie)
+
     implementation ("com.github.ibrahimsn98:SmoothBottomBar:1.7.9")
 
 

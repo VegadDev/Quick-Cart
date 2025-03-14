@@ -67,7 +67,11 @@ fun SplashScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Turn on your internet",
+                    text = when {
+                        uiState.noInternet -> "Turn on your internet"
+                        uiState.error != null -> uiState.error ?: "Unknown error"
+                        else -> ""
+                    },
                     color = AppTheme.colors.error,
                     style = AppTheme.textStyles.bold.large,
                     textAlign = TextAlign.Center

@@ -39,16 +39,20 @@ constructor(
         checkInternetAndSignInStatus()
     }
 
-    internal fun checkInternetAndSignInStatus() {
+    public fun checkInternetAndSignInStatus() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(isLoading = true, noInternet = false, error = null) }
             if (networkChecker.isInternetAvailable()) {
-                val account = GoogleSignIn.getLastSignedInAccount(context)
-                delay(2000)
-                if (account != null) {
-                    navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.HomeScreen.route))
-                } else {
-                    navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.LoginScreen.route))
+                try {
+                    val account = GoogleSignIn.getLastSignedInAccount(context)
+                    delay(2000) // Minimum splash duration (optional)
+                    if (account != null) {
+                        navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.HomeScreen.route))
+                    } else {
+                        navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.LoginScreen.route))
+                    }
+                } catch (e: Exception) {
+                    _uiState.update { it.copy(isLoading = false, error = "Sign-In Check Failed: ${e.message}") }
                 }
             } else {
                 _uiState.update { it.copy(isLoading = false, noInternet = true) }

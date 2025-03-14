@@ -4,6 +4,8 @@ package com.dev.quickcart.navigation
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.dev.quickcart.admin.AdminScreen
+import com.dev.quickcart.admin.AdminViewModel
 import com.dev.quickcart.screens.addProduct.AddProductScreen
 import com.dev.quickcart.screens.addProduct.AddProductViewModel
 import com.dev.quickcart.screens.login.intro.IntroScreen
@@ -31,6 +33,8 @@ import com.dev.quickcart.screens.settings.SettingViewModel
 
 sealed class AppScreens(val route: String) {
 
+    data object AdminScreen : AppScreens("AdminScreen")
+
     data object HomeScreen : AppScreens("HomeScreen")
     data object CartScreen : AppScreens("CartScreen")
     data object ProfileScreen : AppScreens("ProfileScreen")
@@ -48,6 +52,12 @@ sealed class AppScreens(val route: String) {
 
 
 val screens = listOf(
+
+    Screen(AppScreens.AdminScreen.route) {
+        val viewModel = hiltViewModel<AdminViewModel>()
+        val uiState by viewModel.uiState.collectAsState()
+        AdminScreen(interActor = viewModel.interActor , uiState)
+    },
 
     Screen(AppScreens.HomeScreen.route) {
         val viewModel = hiltViewModel<HomeViewModel>()

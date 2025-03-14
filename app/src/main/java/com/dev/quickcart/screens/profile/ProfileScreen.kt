@@ -117,7 +117,7 @@ fun ProfileScreen(
                 )
 
                 Text(
-                    text = uiState.userMobileNumber,
+                    text = uiState.userId,
                     style = AppTheme.textStyles.regular.regular,
                     color = AppTheme.colors.titleText,
                     modifier = Modifier.padding(top = 10.dp)

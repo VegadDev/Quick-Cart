@@ -73,7 +73,7 @@ constructor(
                 it.copy(
                     userName = account.displayName ?: "Guest",
                     userImage = account.photoUrl?.toString(),
-                    //userId = account.id.toString()
+                    userId = account.email.toString()
                 )
             }
         } else {

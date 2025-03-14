@@ -4,7 +4,6 @@ import com.dev.quickcart.data.model.Product
 
 interface HomeInterActor {
 
-    fun gotoAddProduct()
     fun updateSearchInput(it: String)
     fun gotoProductPage(it: Int)
     fun gotoCart()

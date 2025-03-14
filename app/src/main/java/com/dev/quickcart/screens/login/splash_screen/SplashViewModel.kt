@@ -34,22 +34,27 @@ constructor(
     private val _uiState = MutableStateFlow(SplashUiState())
     val uiState: StateFlow<SplashUiState> = _uiState.asStateFlow()
 
+    private val adminEmail = "vegaddevdatt@gmail.com"
 
     init {
         checkInternetAndSignInStatus()
     }
 
-    public fun checkInternetAndSignInStatus() {
+    fun checkInternetAndSignInStatus() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, noInternet = false, error = null) }
             if (networkChecker.isInternetAvailable()) {
                 try {
                     val account = GoogleSignIn.getLastSignedInAccount(context)
-                    delay(2000) // Minimum splash duration (optional)
+                    delay(2000)
                     if (account != null) {
-                        navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.HomeScreen.route))
+                        if (account.email == adminEmail) {
+                            navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.AdminScreen.route))
+                        } else {
+                            navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.HomeScreen.route))
+                        }
                     } else {
-                        navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.IntroScreen.route))
+                        navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.LoginScreen.route))
                     }
                 } catch (e: Exception) {
                     _uiState.update { it.copy(isLoading = false, error = "Sign-In Check Failed: ${e.message}") }

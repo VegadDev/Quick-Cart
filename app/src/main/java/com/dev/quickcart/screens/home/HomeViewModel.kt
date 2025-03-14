@@ -46,10 +46,6 @@ constructor(
     val interActor = object : HomeInterActor {
 
 
-        override fun gotoAddProduct() {
-            navigator.navigate(NavigationCommand.To(AppScreens.AddScreen.route))
-        }
-
         override fun updateSearchInput(it: String) {
             _uiState.value = _uiState.value.copy(searchInput = it , searchInputError = "")
         }

@@ -218,17 +218,6 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
 
         }
 
-
-
-        AddButton(
-            onAddClick = { interActor.gotoAddProduct() },
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(bottom = 20.dp, end = 20.dp),
-        )
-
-
-
         CustomCard(
             modifier = Modifier
                 .align(Alignment.BottomEnd)

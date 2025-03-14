@@ -23,10 +23,6 @@ data class DataState<out T>(val status: Status, val data: T?, val message: Strin
     }
 }
 
-//data class LoginResponse(
-//    @SerializedName("user") val user: UserDto,
-//    @SerializedName("address") val library: List<LibraryDto> = emptyList(),
-//)
 
 enum class Status {
     SUCCESS,

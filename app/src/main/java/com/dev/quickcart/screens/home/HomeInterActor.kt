@@ -1,14 +1,16 @@
 package com.dev.quickcart.screens.home
 
+import com.dev.quickcart.data.model.Product
+
 interface HomeInterActor {
 
-    fun gotoProfile()
+    fun gotoAddProduct()
     fun updateSearchInput(it: String)
+    fun gotoProductPage(it: Int)
+    fun gotoCart()
+    fun addToCart(product: Product)
+    fun gotoProfile()
 
 }
 
 
-object DefaultHomeInterActor: HomeInterActor{
-    override fun gotoProfile() {}
-    override fun updateSearchInput(it: String) {}
-}

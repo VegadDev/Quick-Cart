@@ -1,11 +1,13 @@
 package com.dev.quickcart.screens.profile
 
 interface ProfileInterActor {
-    fun gotoHome()
+
+    fun onBackClick()
+
+    fun onEditProfileClick()
+    fun onLogoutClick()
+
+
 }
 
 
-object DefaultProfileInterActor: ProfileInterActor {
-    override fun gotoHome() {}
-
-}

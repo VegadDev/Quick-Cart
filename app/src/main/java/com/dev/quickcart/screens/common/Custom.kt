@@ -9,6 +9,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -26,7 +29,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dev.quickcart.R
@@ -44,12 +46,13 @@ fun CustomCard(
     onClick: () -> Unit = {},
     isClickable: Boolean = true,
     border: BorderStroke? = null,
+    cardElevation: Int = 5,
     function: @Composable () -> Unit = {},
 ) {
 
     Card(
         shape = RoundedCornerShape(cardCorner.dp),
-        elevation = CardDefaults.cardElevation(5.dp),
+        elevation = CardDefaults.cardElevation(cardElevation.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),
         border = border,
         modifier = modifier
@@ -200,14 +203,17 @@ fun NewCard(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddressDropDownWidget(
+fun MyDropDown(
     modifier: Modifier = Modifier,
-    addresses: List<String> = listOf("My Flat", "Home", "Office", "Other"),
-    initialAddress: String = "My Flat",
-    onAddressSelected: (String) -> Unit = {}
+    items: List<String>,
+    initialItem: String = items[0],
+    onItemSelected: (String) -> Unit = {},
+    title: String = "",
+    isicon: Boolean = true,
+    corner: Int = 30
 ) {
     // Track currently selected address
-    var selectedAddress by remember { mutableStateOf(initialAddress) }
+    var selectedItem by remember { mutableStateOf(initialItem) }
 
     // Track whether the bottom sheet is visible
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -226,30 +232,71 @@ fun AddressDropDownWidget(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Select Address",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier
-                        .padding(bottom = 8.dp)
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-                addresses.forEach { address ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
                     Text(
-                        text = address,
+                        text = title,
+                        style = AppTheme.textStyles.bold.largeTitle,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                selectedAddress = address
-                                onAddressSelected(address)
-                                showBottomSheet = false
-                            }
-                            .padding(vertical = 12.dp),
-                        style = MaterialTheme.typography.bodyLarge
+                            .padding(bottom = 8.dp),
                     )
+                    Spacer(Modifier.weight(1f))
+                    if (title.equals("Select Address")){
+                        Text(
+                            text = "+ Add new address",
+                            style = AppTheme.textStyles.regular.regular,
+                            color = AppTheme.colors.primary,
+                            modifier = Modifier.clickable { },
+                        )
+                    }
+                    else null
                 }
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(7.dp)
+                ) {
+                    this.items(items.chunked(2)) { rowItems ->  // Group into pairs
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            rowItems.forEach { item ->
+                                CustomCard(
+                                    border = if (selectedItem == item) BorderStroke(1.dp, AppTheme.colors.primary) else null,
+                                    onClick = {
+                                        selectedItem = item
+                                        onItemSelected(item)
+                                    },
+                                    modifier = Modifier.weight(1f).padding(6.dp),
+                                    cardCorner = 14
+                                ) {
+                                    Text(
+                                        item,
+                                        style = AppTheme.textStyles.bold.large,
+                                        color = if (selectedItem == item) AppTheme.colors.primary else AppTheme.colors.titleText,
+                                        modifier = Modifier.padding(horizontal = 15.dp , vertical = 10.dp)
+                                    )
+                                }
+                            }
+                            if (rowItems.size < 2) {
+                                Spacer(modifier = Modifier.weight(1f)) // Maintain layout if odd items
+                            }
+                        }
+                    }
+                }
+                Spacer(Modifier.size(15.dp))
+                MyButton(
+                    "Confirm",
+                    onClick = { showBottomSheet = false },
+                    modifier = Modifier.fillMaxWidth(0.8f)
+                )
+
             }
         }
     }
@@ -257,9 +304,10 @@ fun AddressDropDownWidget(
     NewCard(
         cardWidth = 140,
         cardHeight = 55,
-        cardCorner = 30 ,
+        cardCorner = corner ,
         cardColor = AppTheme.colors.cardBackgroundColor,
         onClick = { showBottomSheet = true },
+        modifier = modifier
     ) {
         Row(
             modifier = Modifier
@@ -267,33 +315,29 @@ fun AddressDropDownWidget(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CustomIcon(
-                icon = R.drawable.ic_location,
-                modifier = Modifier.padding(2.dp),
-                imageModifier = Modifier.size(30.dp)
-            )
+            if (isicon){
+                CustomIcon(
+                    icon = R.drawable.ic_location,
+                    modifier = Modifier.padding(2.dp),
+                    imageModifier = Modifier.size(30.dp),
+                    colorFilter = ColorFilter.tint(AppTheme.colors.primary)
+                )
+
+            }
+            else null
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = selectedAddress,
+                text = selectedItem,
                 style = AppTheme.textStyles.bold.regular,
                 color = AppTheme.colors.titleText
             )
             Spacer(modifier = Modifier.width(4.dp))
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = "Dropdown Arrow"
+                contentDescription = null
             )
         }
     }
-
-//    CustomCard(
-//        modifier = Modifier.width(140.dp),
-//        cardCorner = 40,
-//        cardColor = AppTheme.colors.cardBackgroundColor,
-//        onClick = { showBottomSheet = true },
-//    ) {
-//
-//    }
 
 }
 
@@ -306,7 +350,8 @@ fun CustomTextField(
     onSearch: () -> Unit,
     modifier: Modifier = Modifier,
     cornerShape: Int = 8,
-    hint: String = "Search...",
+    hint: String = "",
+    error: String? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     prefix: @Composable (() -> Unit)? = null,
@@ -332,6 +377,7 @@ fun CustomTextField(
             color = AppTheme.colors.lightGray
         ) },
         singleLine = true,
+        isError = error?.isNotEmpty() ?: false,
         shape = RoundedCornerShape(cornerShape.dp),
         textStyle = textStyle,
         leadingIcon = leadingIcon,

@@ -66,7 +66,7 @@ fun QuickCartNav(
 
     NavHost(
         navController = navController,
-        startDestination = AppScreens.HomeScreen.route,
+        startDestination = AppScreens.SplashScreen.route,
         enterTransition = { fadeIn(animationSpec = tween(300)) },
         exitTransition = { fadeOut(animationSpec = tween(300)) },
         popEnterTransition = { fadeIn(animationSpec = tween(300)) },

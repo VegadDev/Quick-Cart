@@ -22,7 +22,10 @@ data class AppColors(
     val titleText: Color,
     val googleButtonColor: Color,
     val otpCard: Color,
-    val black: Color
+    val black: Color,
+    val borderGray: Color,
+    val minusGray: Color = Color(0xFFB3B3B3),
+    val darkGreen: Color = Color(0xFF005418),
 )
 
 
@@ -44,7 +47,8 @@ val customAppColorsLight = AppColors(
     titleText = Color(0xFF06161C),
     googleButtonColor = Color(0xFF5383EC),
     otpCard = Color(0xFFF0F1F2),
-    black = Color(0xFF0D0D0D)
+    black = Color(0xFF0D0D0D),
+    borderGray = Color(0xFFE2E2E2),
 )
 
 
@@ -67,7 +71,8 @@ val customAppColorsDark = AppColors(
     titleText = Color(0xFFFAFAFA),
     googleButtonColor = Color(0xFF5383EC),
     otpCard = Color(0xFF1A3848),
-    black = Color(0xFFFAF9F6)
+    black = Color(0xFFFAF9F6),
+    borderGray = Color(0xFF2F2F2F),
 
 
 )

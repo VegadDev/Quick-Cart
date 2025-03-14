@@ -9,9 +9,12 @@ data class Product(
 
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val prodName: String,
-    val prodImage: ByteArray,
+    val prodImage: String,
     val prodPrice: String,
     val prodDescription: String = "",
+    val productCategory: String = "",
+    val productType: String = "",
+    val productTypeValue: String = "",
     val prodCalories: String = "",
     val prodProtein: String = "",
     val prodFat: String = "",

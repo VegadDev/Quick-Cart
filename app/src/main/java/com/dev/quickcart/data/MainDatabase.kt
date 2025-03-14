@@ -4,12 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
 import com.dev.quickcart.data.model.Product
 
 
 @Database(
     entities = [Product::class], version = 1, exportSchema = false
 )
+@TypeConverters(Converters::class)
 abstract class MainDatabase : RoomDatabase() {
 
     abstract fun dataDao(): DataDao

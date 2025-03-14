@@ -1,5 +1,9 @@
 package com.dev.quickcart.screens.login.login_screen
 
+import android.app.Activity
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,9 +21,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +36,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -45,9 +52,25 @@ import com.dev.quickcart.screens.common.CustomIcon
 import com.dev.quickcart.screens.common.CustomTextField
 import com.dev.quickcart.ui.theme.AppTheme
 
+
+
+
 @Composable
 fun LoginScreen(interActor: LoginInterActor, uiState: LoginUiState) {
 
+
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        Log.d("LoginScreen", "Result received: resultCode=${result.resultCode}, data=${result.data}")
+        interActor.handleGoogleSignInResult(result)
+    }
+
+    // Use a stable key to ensure launcher persists across recompositions
+    LaunchedEffect(googleSignInLauncher) {
+        Log.d("LoginScreen", "Setting launcher: $googleSignInLauncher")
+        interActor.setGoogleSignInLauncher(googleSignInLauncher)
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -131,15 +154,6 @@ fun LoginScreen(interActor: LoginInterActor, uiState: LoginUiState) {
                 onClick = { showOtpDialog = true }
             )
 
-            if (showOtpDialog) {
-                OtpPopup(
-                    onDismiss = { showOtpDialog = false },
-                    onOtpVerify = {
-                        showOtpDialog = false
-                        interActor.gotoHomeScreen()
-                    }
-                )
-            }
 
             Text(
                 "Or connect with",
@@ -148,6 +162,10 @@ fun LoginScreen(interActor: LoginInterActor, uiState: LoginUiState) {
                 modifier = Modifier.padding(vertical = 25.dp)
             )
             CustomCard(
+                onClick = {
+                    interActor.onGoogleSignInClick()
+                    Log.d("LoginScreen", "Google Sign-In button clicked")
+                          },
                 cardCorner = 40,
                 cardColor = AppTheme.colors.googleButtonColor,
                 modifier = Modifier.fillMaxWidth(0.85f).height(56.dp),
@@ -171,14 +189,53 @@ fun LoginScreen(interActor: LoginInterActor, uiState: LoginUiState) {
                 }
             }
 
+            if (uiState.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+                Log.d("LoginScreen", "Showing loading indicator")
+            }
+            uiState.error?.let { error ->
+                Text(
+                    text = "Error: $error",
+                    color = AppTheme.colors.error,
+                    style = AppTheme.textStyles.bold.regular,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 16.dp)
+                )
+                Log.e("LoginScreen", "Error displayed: $error")
+            }
+            uiState.userEmail?.let { email ->
+                Text(
+                    text = "Signed in as: $email",
+                    color = AppTheme.colors.titleText,
+                    style = AppTheme.textStyles.bold.regular,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 16.dp)
+                )
+                Log.d("LoginScreen", "User email displayed: $email")
+            }
 
         }
 
     }
+
+
 }
 
 
 
+//            if (showOtpDialog) {
+//                OtpPopup(
+//                    onDismiss = { showOtpDialog = false },
+//                    onOtpVerify = {
+//                        showOtpDialog = false
+//                        interActor.gotoHomeScreen()
+//                    }
+//                )
+//            }
 
 
 @Composable

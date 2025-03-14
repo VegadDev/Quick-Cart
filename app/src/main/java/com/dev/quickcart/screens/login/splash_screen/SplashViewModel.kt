@@ -1,6 +1,8 @@
 package com.dev.quickcart.screens.login.splash_screen
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.quickcart.navigation.AppScreens
@@ -24,8 +26,8 @@ import javax.inject.Inject
 class SplashScreenViewModel
 @Inject
 constructor(
-    private val googleSignInClient: GoogleSignInClient,
     private val navigator: Navigator,
+    private val networkChecker: NetworkChecker,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -34,20 +36,27 @@ constructor(
 
 
     init {
-        checkSignInStatus()
+        checkInternetAndSignInStatus()
     }
 
-    private fun checkSignInStatus() {
+    internal fun checkInternetAndSignInStatus() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            val account = GoogleSignIn.getLastSignedInAccount(context)
-            //delay(2000)
-            if (account != null) {
-                navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.HomeScreen.route))
+            if (networkChecker.isInternetAvailable()) {
+                val account = GoogleSignIn.getLastSignedInAccount(context)
+                delay(2000)
+                if (account != null) {
+                    navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.HomeScreen.route))
+                } else {
+                    navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.LoginScreen.route))
+                }
             } else {
-                navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.IntroScreen.route))
+                _uiState.update { it.copy(isLoading = false, noInternet = true) }
             }
-            _uiState.update { it.copy(isLoading = false) }
         }
     }
+
+
+
+
 }

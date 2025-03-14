@@ -10,6 +10,7 @@ import com.dev.quickcart.data.repository.DataRepositoryImpl
 import com.dev.quickcart.data.repository.NetworkRepository
 import com.dev.quickcart.data.repository.NetworkRepositoryImpl
 import com.dev.quickcart.navigation.Navigator
+import com.dev.quickcart.screens.login.splash_screen.NetworkChecker
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -70,6 +71,13 @@ object AppModule {
     @Singleton
     @Provides
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+
+
+    @Singleton
+    @Provides
+    fun provideNetworkChecker(@ApplicationContext context: Context): NetworkChecker {
+        return NetworkChecker(context)
+    }
 
 
 }

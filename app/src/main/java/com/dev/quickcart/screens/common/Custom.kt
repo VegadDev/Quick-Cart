@@ -1,5 +1,8 @@
 package com.dev.quickcart.screens.common
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
@@ -31,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.dev.quickcart.R
 import com.dev.quickcart.ui.theme.AppTheme
 import kotlinx.coroutines.CoroutineScope
@@ -439,9 +443,51 @@ fun MyButton(
 
 
     }
-
-
-
 }
 
+
+@Composable
+fun ImagePicker(
+    onImagePicked: (Uri?) -> Unit, // Callback to handle the picked Uri
+    modifier: Modifier = Modifier
+) {
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+    // Launcher for picking an image
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        imageUri = uri
+        onImagePicked(uri) // Pass the Uri to the callback
+    }
+
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(
+            onClick = { imagePickerLauncher.launch("image/*") },
+            modifier = Modifier.fillMaxWidth(0.5f)
+        ) {
+            Text("Pick Image")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Optional: Preview the selected image
+        imageUri?.let { uri ->
+            Image(
+                painter = rememberAsyncImagePainter(uri),
+                contentDescription = "Selected Image",
+                modifier = Modifier
+                    .size(200.dp)
+                    .padding(8.dp)
+            )
+            Text(
+                text = "Selected: ${uri.path}",
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+    }
+}
 

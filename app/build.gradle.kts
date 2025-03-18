@@ -40,6 +40,8 @@ android {
     buildFeatures {
         compose = true
     }
+
+   
 }
 
 dependencies {
@@ -78,11 +80,7 @@ dependencies {
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
-
-    // Room Database
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    ksp(libs.ksp.room.compiler) // Room Compiler
+    implementation (libs.kotlinx.coroutines.play.services)
 
     implementation(libs.jetpack.compose.components)
     implementation(libs.navigation.animation)
@@ -92,12 +90,13 @@ dependencies {
 
     implementation(libs.gson)
     implementation(libs.coil)
-    implementation(libs.lottie)
 
     implementation(libs.firebase.auth)
     implementation(libs.play.services.auth)
+    implementation(libs.firebase.firestore)
+    implementation(platform(libs.firebase.bom))
 
-    implementation ("com.github.ibrahimsn98:SmoothBottomBar:1.7.9")
+
 
 
 }

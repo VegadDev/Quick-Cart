@@ -2,7 +2,6 @@ package com.dev.quickcart.admin
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import com.dev.quickcart.data.repository.DataRepository
 import com.dev.quickcart.navigation.AppScreens
 import com.dev.quickcart.navigation.NavigationCommand
 import com.dev.quickcart.navigation.Navigator

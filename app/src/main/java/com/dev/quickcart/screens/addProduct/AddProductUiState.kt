@@ -1,5 +1,6 @@
 package com.dev.quickcart.screens.addProduct
 
+import android.net.Uri
 import com.dev.quickcart.data.model.Product
 
 data class AddProductUiState(
@@ -9,7 +10,7 @@ data class AddProductUiState(
     val productName: String = "",
     val productNameError: String = "",
 
-    var productImage: List<String> = emptyList(),
+    var productImage: Uri = Uri.EMPTY,
     val productImageError: String = "",
 
     val productPrice: String = "",
@@ -39,7 +40,10 @@ data class AddProductUiState(
     val productFiber: String = "",
     val productFiberError: String = "",
 
-    val successMessage: String = "",
-    val errorMessage: String = ""
+    val successMessage: String? = "",
+    val errorMessage: String = "",
+
+    val isLoading: Boolean = false,
+    val error: String? = null,
 
 )

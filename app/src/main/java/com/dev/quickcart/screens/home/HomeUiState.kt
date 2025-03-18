@@ -5,8 +5,9 @@ import com.dev.quickcart.data.model.Product
 data class HomeUiState(
 
 
-
     val productList: List<Product> = emptyList(),
+    val isLoading: Boolean = false,
+    val error: String? = null,
 
 
     val searchInput: String = "",
@@ -14,12 +15,6 @@ data class HomeUiState(
 
     val userName: String = "",
     val userImage: String? = null,
-
-
-    val prodName: String = "",
-    val prodImage: String = "",
-    val prodPrice: String = "",
-    val prodDescription: String = "",
 
 
 )

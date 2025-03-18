@@ -36,6 +36,8 @@ class LoginViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
+    private val adminEmail = "vegaddevdatt@gmail.com"
+
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
@@ -100,7 +102,12 @@ class LoginViewModel @Inject constructor(
 
     private fun onSignInSuccess(account: GoogleSignInAccount?) {
         _uiState.update { it.copy(isLoading = false, userEmail = account?.email) }
-        navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.HomeScreen.route))
+        if (account?.email == adminEmail){
+            navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.AdminScreen.route))
+        }
+        else {
+            navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.HomeScreen.route))
+        }
     }
 }
 

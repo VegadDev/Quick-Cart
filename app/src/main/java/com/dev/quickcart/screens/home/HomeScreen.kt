@@ -1,6 +1,6 @@
 package com.dev.quickcart.screens.home
 
-import android.util.Log
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,31 +31,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.dev.quickcart.R
 import com.dev.quickcart.data.model.Product
-import com.dev.quickcart.screens.common.AddButton
+import com.dev.quickcart.screens.addProduct.stringToByteArray
 import com.dev.quickcart.screens.common.MyDropDown
 import com.dev.quickcart.screens.common.CustomCard
 import com.dev.quickcart.screens.common.CustomIcon
 import com.dev.quickcart.screens.common.CustomTextField
 import com.dev.quickcart.screens.common.NewCard
 import com.dev.quickcart.ui.theme.AppTheme
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.dev.quickcart.utils.uriToBlob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
+
 
 
     Box(
@@ -78,7 +77,7 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                         .padding(26.dp)
                 ) {
                     AsyncImage(
-                        model = uiState.userImage ?: R.drawable.ic_user, // Fallback to placeholder
+                        model = uiState.userImage ?: R.drawable.ic_user,
                         contentDescription = null,
                         modifier = Modifier
                             .size(48.dp)
@@ -172,14 +171,11 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                         ProductCard(
                             product = item,
                             onClick = {
-                                interActor.gotoProductPage(item.id)
-                            },
-                            addToCard = {
-                                interActor.addToCart(item)
                             }
                         )
                     }
                 }
+
 
 
 
@@ -200,6 +196,7 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                     )
                 }
 
+
                 LazyRow(
                     modifier = Modifier.padding(horizontal = 20.dp),
                 ) {
@@ -207,7 +204,7 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                         ProductCard(
                             product = item,
                             onClick = {
-                                interActor.gotoProductPage(item.id)
+                                interActor.gotoProductPage(item.prodId)
                             }
                         )
                     }
@@ -300,10 +297,7 @@ fun ProductCard(
                     color = AppTheme.colors.titleText
                 )
 
-                val imagePaths = Gson().fromJson<List<String>>(
-                    product.prodImage, object : TypeToken<List<String>>() {}.type
-                )
-                val firstImagePath = imagePaths.firstOrNull() // Get the first image only
+                //val imageBytes = uriToBlob(product.prodImage)
 
                 Row(
                     modifier = Modifier
@@ -312,12 +306,17 @@ fun ProductCard(
                         .padding(top = 13.dp, bottom = 10.dp),
                     horizontalArrangement = Arrangement.Center,
                 ) {
-                    AsyncImage(
-                        model = firstImagePath,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
+                    val byteArray = product.prodImage.toBytes()
+                    val bitmap = byteArray.let { BitmapFactory.decodeByteArray(it, 0, it.size) }
+                    if (bitmap != null) {
+                        Image(
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    } else {
+                        Text("Failed to load image")
+                    }
                 }
 
 
@@ -419,4 +418,22 @@ fun BannerItem(image: Painter) {
     }
 }
 
+
+
+@Composable
+fun ProductImage(product: Product) {
+    product.prodImage?.let { blob ->
+        val byteArray = blob.toBytes()
+        val bitmap = byteArray.let { BitmapFactory.decodeByteArray(it, 0, it.size) }
+        if (bitmap != null) {
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            Text("Failed to load image")
+        }
+    } ?: Text("No image available")
+}
 

@@ -3,10 +3,6 @@ package com.dev.quickcart.di
 import android.content.Context
 import com.dev.quickcart.MyApp
 import com.dev.quickcart.R
-import com.dev.quickcart.data.DataDao
-import com.dev.quickcart.data.MainDatabase
-import com.dev.quickcart.data.repository.DataRepository
-import com.dev.quickcart.data.repository.DataRepositoryImpl
 import com.dev.quickcart.data.repository.NetworkRepository
 import com.dev.quickcart.data.repository.NetworkRepositoryImpl
 import com.dev.quickcart.navigation.Navigator
@@ -15,6 +11,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,17 +37,6 @@ object AppModule {
     }
 
 
-    @Singleton
-    @Provides
-    fun provideDataDao( @ApplicationContext context: Context): DataDao {
-        return MainDatabase.getInstance(context, "local.db").dataDao()
-    }
-
-    @Singleton
-    @Provides
-    fun provideDataRepository(dataRepository: DataRepositoryImpl): DataRepository {
-        return dataRepository
-    }
 
     @Singleton
     @Provides
@@ -72,6 +58,10 @@ object AppModule {
     @Provides
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
 
+
+    @Singleton
+    @Provides
+    fun provideFirebaseFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
 
     @Singleton
     @Provides

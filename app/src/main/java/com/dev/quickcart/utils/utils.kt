@@ -1,12 +1,9 @@
 package com.dev.quickcart.utils
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
-import coil.Coil
-import coil.request.ImageRequest
+import android.util.Log
+import com.google.firebase.firestore.Blob
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
@@ -14,9 +11,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
 
 fun <T, R> (suspend () -> ServerResponse<T>).executeSafeFlow(
     block: suspend (T) -> R
@@ -42,15 +38,35 @@ fun Any.toJsonObject(): JsonObject {
 }
 
 
-
-fun saveImageToInternalStorage(context: Context, uri: Uri): String {
-    val inputStream = context.contentResolver.openInputStream(uri)
-    val file = File(context.filesDir, "${System.currentTimeMillis()}.jpg")
-    val outputStream = FileOutputStream(file)
-    inputStream?.copyTo(outputStream)
-    inputStream?.close()
-    outputStream.close()
-    return file.absolutePath // Return saved image path
+internal suspend fun uriToBlob(context: Context, uri: Uri): Blob? {
+    return withContext(Dispatchers.IO) {
+        try {
+            val byteArray = uriToByteArray(context, uri)
+            byteArray?.let { Blob.fromBytes(it) }
+        } catch (e: Exception) {
+            Log.e("ImageDebug", "Failed to convert URI to Blob: ${e.message}", e)
+            null
+        }
+    }
 }
 
-
+private suspend fun uriToByteArray(context: Context, uri: Uri): ByteArray? {
+    return withContext(Dispatchers.IO) {
+        try {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            val outputStream = ByteArrayOutputStream()
+            val buffer = ByteArray(1024)
+            var bytesRead: Int
+            while (inputStream?.read(buffer).also { bytesRead = it ?: -1 } != -1) {
+                outputStream.write(buffer, 0, bytesRead)
+            }
+            val byteArray = outputStream.toByteArray()
+            inputStream?.close()
+            outputStream.close()
+            byteArray
+        } catch (e: Exception) {
+            Log.e("ImageDebug", "Failed to read image: ${e.message}", e)
+            null
+        }
+    }
+}

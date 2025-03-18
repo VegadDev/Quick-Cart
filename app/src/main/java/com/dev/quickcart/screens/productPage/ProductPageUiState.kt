@@ -1,6 +1,13 @@
 package com.dev.quickcart.screens.productPage
 
+import com.dev.quickcart.data.model.Product
+
 data class ProductPageUiState(
+
+
+    val products: Product? = null,
+    val isLoading: Boolean = true,
+    val error: String? = null,
 
     val productName: String = "",
     val productImage: String = "",
@@ -11,6 +18,11 @@ data class ProductPageUiState(
     val prodProtein: String = "",
     val prodFat: String = "",
     val prodFiber: String = "",
+
+
+
+
+
 
 
 )

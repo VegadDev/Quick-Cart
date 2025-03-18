@@ -54,6 +54,7 @@ import com.dev.quickcart.screens.addProduct.stringToByteArray
 import com.dev.quickcart.screens.common.CustomCard
 import com.dev.quickcart.screens.common.CustomIcon
 import com.dev.quickcart.ui.theme.AppTheme
+import com.dev.quickcart.utils.displayQuantity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
@@ -91,27 +92,20 @@ fun ProductPageScreen(interActor: ProductPageInterActor, uiState: ProductPageUiS
                             imageModifier = Modifier.size(25.dp),
                         )
                     }
-                    Box(
+                    Row(
                         Modifier
                             .fillMaxWidth()
-                            .padding(top = 30.dp, bottom = 50.dp)
+                            .height(220.dp)
+                            .padding(top = 10.dp, bottom = 50.dp)
                     ) {
                         if (true) {
                             val byteArray = uiState.products?.prodImage?.toBytes()
-                            val bitmap = byteArray.let {
-                                it?.let { it1 ->
-                                    BitmapFactory.decodeByteArray(
-                                        it,
-                                        0,
-                                        it1.size
-                                    )
-                                }
-                            }
+                            val bitmap = byteArray.let { it?.let { it1 -> BitmapFactory.decodeByteArray(it, 0, it1.size) } }
                             if (bitmap != null) {
                                 Image(
                                     bitmap = bitmap.asImageBitmap(),
                                     contentDescription = null,
-                                    modifier = Modifier.fillMaxSize()
+                                    modifier = Modifier.fillMaxSize(),
                                 )
                             } else {
                                 androidx.compose.material3.Text("Failed to load image")
@@ -132,14 +126,16 @@ fun ProductPageScreen(interActor: ProductPageInterActor, uiState: ProductPageUiS
                         Text(
                             text = it.prodName,
                             style = AppTheme.textStyles.extraBold.largeTitle,
-                            color = AppTheme.colors.titleText
+                            color = AppTheme.colors.titleText,
+                            modifier = Modifier.padding(top = 5.dp , start = 8.dp)
                         )
                     }
                     uiState.products?.let {
                         Text(
-                            formatWeight(it.productTypeValue),
+                            text = displayQuantity(it),
                             style = AppTheme.textStyles.bold.large,
-                            color = AppTheme.colors.secondary
+                            color = AppTheme.colors.secondary,
+                            modifier = Modifier.padding(top = 5.dp , start = 8.dp)
                         )
                     }
 
@@ -210,6 +206,7 @@ fun ProductPageScreen(interActor: ProductPageInterActor, uiState: ProductPageUiS
                         )
                     }
 
+                    Spacer(Modifier.size(7.dp))
                     uiState.products?.let {
                         if (it.productType == "weighed") {
                             Text(
@@ -220,7 +217,7 @@ fun ProductPageScreen(interActor: ProductPageInterActor, uiState: ProductPageUiS
                             )
                         } else {
                             Text(
-                                "One ${uiState.products.prodName} gives :",
+                                "One ${uiState.products.prodName}gives :",
                                 style = AppTheme.textStyles.extraBold.large,
                                 color = AppTheme.colors.titleText,
                                 modifier = Modifier.padding(top = 15.dp, bottom = 15.dp)
@@ -392,11 +389,3 @@ fun ProductPageScreen(interActor: ProductPageInterActor, uiState: ProductPageUiS
 }
 
 
-fun formatWeight(grams: String): String {
-    return if (grams >= 1000.toString()) {
-        val kg = grams.toInt() / 1000.0 // Convert to kg
-        String.format("%.2f kg", kg) // Format to 2 decimal places
-    } else {
-        "$grams g"
-    }
-}

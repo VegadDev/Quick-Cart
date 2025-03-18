@@ -22,6 +22,7 @@ import javax.inject.Inject
 
 
 
+@Suppress("DEPRECATION")
 @HiltViewModel
 class SplashScreenViewModel
 @Inject
@@ -46,7 +47,7 @@ constructor(
             if (networkChecker.isInternetAvailable()) {
                 try {
                     val account = GoogleSignIn.getLastSignedInAccount(context)
-                    delay(2000)
+                    delay(200)
                     if (account != null) {
                         if (account.email == adminEmail) {
                             navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.AdminScreen.route))

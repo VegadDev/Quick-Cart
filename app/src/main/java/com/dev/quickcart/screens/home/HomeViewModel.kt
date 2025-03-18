@@ -1,6 +1,12 @@
 package com.dev.quickcart.screens.home
 
 import android.content.Context
+import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.quickcart.data.model.Product
@@ -87,9 +93,11 @@ constructor(
     }
 
 
+
     fun fetchAllProducts() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
+            delay(100)
             val result = networkRepository.getAllProducts()
             _uiState.update { currentState ->
                 when {
@@ -99,7 +107,7 @@ constructor(
                         error = null
                     )
                     result.isFailure -> currentState.copy(
-                        isLoading = false,
+                        isLoading = true,
                         error = result.exceptionOrNull()?.message
                     )
                     else -> currentState

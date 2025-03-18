@@ -1,6 +1,7 @@
 package com.dev.quickcart.screens.home
 
 import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,7 +48,10 @@ import com.dev.quickcart.screens.common.CustomCard
 import com.dev.quickcart.screens.common.CustomIcon
 import com.dev.quickcart.screens.common.CustomTextField
 import com.dev.quickcart.screens.common.NewCard
+import com.dev.quickcart.screens.common.ShimmerListItem
+import com.dev.quickcart.screens.common.shimmerEffect
 import com.dev.quickcart.ui.theme.AppTheme
+import com.dev.quickcart.utils.displayQuantity
 import com.dev.quickcart.utils.uriToBlob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -164,19 +168,23 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                     )
                 }
 
-                LazyRow(
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                ) {
-                    items(uiState.productList) { item ->
-                        ProductCard(
-                            product = item,
-                            onClick = {
-                            }
-                        )
+                if (uiState.isLoading){
+                    ShimmerListItem(uiState.isLoading)
+                }
+                else {
+                    LazyRow(
+                        modifier = Modifier.padding(horizontal = 20.dp),
+                    ) {
+                        items(uiState.productList) { item ->
+                            ProductCard(
+                                product = item,
+                                onClick = {
+                                    interActor.gotoProductPage(item.prodId)
+                                }
+                            )
+                        }
                     }
                 }
-
-
 
 
                 Row(
@@ -196,19 +204,66 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                     )
                 }
 
+                val vegetablesProducts = uiState.productList.filter { it.productCategory == "Vegetable" }
 
-                LazyRow(
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                ) {
-                    items(uiState.productList) { item ->
-                        ProductCard(
-                            product = item,
-                            onClick = {
-                                interActor.gotoProductPage(item.prodId)
-                            }
-                        )
+
+                if (uiState.isLoading){
+                    ShimmerListItem(uiState.isLoading)
+                }
+                else {
+                    LazyRow(
+                        modifier = Modifier.padding(horizontal = 20.dp),
+                    ) {
+                        items(vegetablesProducts) { item ->
+                            ProductCard(
+                                product = item,
+                                onClick = {
+                                        interActor.gotoProductPage(item.prodId)
+                                }
+                            )
+                        }
                     }
                 }
+
+
+                Row(
+                    modifier = Modifier.padding(20.dp)
+                ) {
+                    Text(
+                        "Fruits 🍎",
+                        style = AppTheme.textStyles.extraBold.largeTitle,
+                        color = AppTheme.colors.titleText,
+                        fontSize = 19.sp
+                    )
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        "See all",
+                        style = AppTheme.textStyles.regular.regular,
+                        color = AppTheme.colors.primary,
+                    )
+                }
+
+                val fruitsProducts = uiState.productList.filter { it.productCategory == "Fruits" }
+
+
+                if (uiState.isLoading){
+                    ShimmerListItem(uiState.isLoading)
+                }
+                else {
+                    LazyRow(
+                        modifier = Modifier.padding(horizontal = 20.dp),
+                    ) {
+                        items(fruitsProducts) { item ->
+                            ProductCard(
+                                product = item,
+                                onClick = {
+                                    interActor.gotoProductPage(item.prodId)
+                                }
+                            )
+                        }
+                    }
+                }
+
 
             }
 
@@ -260,11 +315,13 @@ fun ProductCard(
     addToCard: () -> Unit = {},
 ) {
 
+    val coroutineScope = rememberCoroutineScope()
+
     if (product.prodImage == null) {
         NewCard(
             modifier = modifier,
             cardWidth = 160,
-            cardHeight = 275,
+            cardHeight = 280,
             cardCorner = 15,
         ) {
             Column(
@@ -285,7 +342,13 @@ fun ProductCard(
             cardWidth = 160,
             cardHeight = 275,
             cardCorner = 15,
-            onClick = { onClick() }
+            onClick = {
+                coroutineScope.launch {
+                    onClick()
+                    delay(2000)
+                }
+
+            }
         ) {
             Column(
                 modifier = Modifier.padding(horizontal = 18.dp)
@@ -296,14 +359,11 @@ fun ProductCard(
                     style = AppTheme.textStyles.bold.large,
                     color = AppTheme.colors.titleText
                 )
-
-                //val imageBytes = uriToBlob(product.prodImage)
-
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(130.dp)
-                        .padding(top = 13.dp, bottom = 10.dp),
+                        .height(120.dp)
+                        .padding(top = 10.dp, bottom = 10.dp),
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     val byteArray = product.prodImage.toBytes()
@@ -312,7 +372,8 @@ fun ProductCard(
                         Image(
                             bitmap = bitmap.asImageBitmap(),
                             contentDescription = null,
-                            modifier = Modifier.fillMaxSize()
+                            filterQuality = FilterQuality.Low,
+                            modifier = Modifier.fillMaxSize(),
                         )
                     } else {
                         Text("Failed to load image")
@@ -328,7 +389,7 @@ fun ProductCard(
                         color = AppTheme.colors.primary
                     )
                     Text(
-                        "1kg - price/kg",
+                        text = displayQuantity(product),
                         style = AppTheme.textStyles.regular.regular,
                         color = AppTheme.colors.textColorLight
                     )
@@ -338,7 +399,7 @@ fun ProductCard(
                         cardCorner = 20,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(40.dp)
+                            .height(50.dp)
                             .padding(top = 10.dp),
                         onClick = { addToCard() }
                     ) {
@@ -418,22 +479,4 @@ fun BannerItem(image: Painter) {
     }
 }
 
-
-
-@Composable
-fun ProductImage(product: Product) {
-    product.prodImage?.let { blob ->
-        val byteArray = blob.toBytes()
-        val bitmap = byteArray.let { BitmapFactory.decodeByteArray(it, 0, it.size) }
-        if (bitmap != null) {
-            Image(
-                bitmap = bitmap.asImageBitmap(),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize()
-            )
-        } else {
-            Text("Failed to load image")
-        }
-    } ?: Text("No image available")
-}
 

@@ -3,6 +3,7 @@ package com.dev.quickcart.utils
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import com.dev.quickcart.data.model.Product
 import com.google.firebase.firestore.Blob
 import com.google.gson.Gson
 import com.google.gson.JsonElement
@@ -68,5 +69,29 @@ private suspend fun uriToByteArray(context: Context, uri: Uri): ByteArray? {
             Log.e("ImageDebug", "Failed to read image: ${e.message}", e)
             null
         }
+    }
+}
+
+
+fun displayQuantity(product: Product): String {
+    return when (product.productType) {
+        "counted" -> {
+            // For counted products, use the countedQuantity and append " piece"
+            val quantity = product.productTypeValue ?: "0"
+            "$quantity piece"
+        }
+        "weighed" -> {
+            // For weighted products, check the weight
+            val weight = product.productTypeValue.toInt()
+            if (weight >= 1000) {
+                // If weight > 1000 grams, convert to kilograms
+                val kg = weight / 1000
+                "$kg kg/price"
+            } else {
+                // If weight <= 1000 grams, show in grams
+                "$weight g/price"
+            }
+        }
+        else -> "Unknown product type"
     }
 }

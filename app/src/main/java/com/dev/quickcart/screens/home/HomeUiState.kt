@@ -6,7 +6,8 @@ data class HomeUiState(
 
 
     val productList: List<Product> = emptyList(),
-    val isLoading: Boolean = false,
+    var isLoading: Boolean = false,
+    var isLoadingOnATC: Boolean = false,
     val error: String? = null,
 
 
@@ -16,8 +17,10 @@ data class HomeUiState(
     val userName: String = "",
     val userImage: String? = null,
 
+    var cartCount: Int = 0,
 
-)
+
+    )
 
 
 

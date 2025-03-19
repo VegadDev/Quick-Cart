@@ -55,7 +55,7 @@ constructor(
                             navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.HomeScreen.route))
                         }
                     } else {
-                        navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.LoginScreen.route))
+                        navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.IntroScreen.route))
                     }
                 } catch (e: Exception) {
                     _uiState.update { it.copy(isLoading = false, error = "Sign-In Check Failed: ${e.message}") }

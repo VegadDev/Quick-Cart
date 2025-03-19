@@ -1,12 +1,22 @@
 package com.dev.quickcart.screens.cart
 
-import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import com.dev.quickcart.ui.theme.AppTheme
 
 @Composable
-fun CartScreen(interActor: CartInterActor , uiState: CartUIState) {
+fun CartScreen(interActor: CartInterActor , uiState: CartUiState) {
 
-    Text("Cart Screen")
+
+    LazyColumn {
+        items(uiState.cartItems){item->
+            Text(item.productName,
+                color = AppTheme.colors.titleText
+            )
+
+        }
+    }
 
 }

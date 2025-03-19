@@ -43,6 +43,7 @@ import coil.compose.AsyncImage
 import com.dev.quickcart.R
 import com.dev.quickcart.data.model.Product
 import com.dev.quickcart.screens.addProduct.stringToByteArray
+import com.dev.quickcart.screens.common.AddButton
 import com.dev.quickcart.screens.common.MyDropDown
 import com.dev.quickcart.screens.common.CustomCard
 import com.dev.quickcart.screens.common.CustomIcon
@@ -191,10 +192,10 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                     modifier = Modifier.padding(20.dp)
                 ) {
                     Text(
-                        "Vegetables 🥕",
+                        "Vegetables",
                         style = AppTheme.textStyles.extraBold.largeTitle,
                         color = AppTheme.colors.titleText,
-                        fontSize = 19.sp
+                        fontSize = 25.sp
                     )
                     Spacer(Modifier.weight(1f))
                     Text(
@@ -230,10 +231,10 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                     modifier = Modifier.padding(20.dp)
                 ) {
                     Text(
-                        "Fruits 🍎",
+                        "Fruits",
                         style = AppTheme.textStyles.extraBold.largeTitle,
                         color = AppTheme.colors.titleText,
-                        fontSize = 19.sp
+                        fontSize = 25.sp
                     )
                     Spacer(Modifier.weight(1f))
                     Text(
@@ -245,6 +246,7 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
 
                 val fruitsProducts = uiState.productList.filter { it.productCategory == "Fruits" }
 
+                val coroutineScope = rememberCoroutineScope()
 
                 if (uiState.isLoading){
                     ShimmerListItem(uiState.isLoading)
@@ -258,6 +260,15 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                                 product = item,
                                 onClick = {
                                     interActor.gotoProductPage(item.prodId)
+                                },
+                                addToCard = {
+                                    coroutineScope.launch {
+                                        uiState.isLoadingOnATC = true
+                                        delay(2000)
+                                        interActor.addToCart(item)
+                                        uiState.isLoadingOnATC = false
+
+                                    }
                                 }
                             )
                         }
@@ -294,7 +305,7 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                     isClickable = false
                 ) {
                     Text(
-                        "1",
+                        uiState.cartCount.toString(),
                         style = AppTheme.textStyles.extraBold.regular,
                         color = AppTheme.colors.onPrimary,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp)
@@ -340,7 +351,7 @@ fun ProductCard(
         NewCard(
             modifier = modifier.padding(end = 17.dp),
             cardWidth = 160,
-            cardHeight = 275,
+            cardHeight = 230,
             cardCorner = 15,
             onClick = {
                 coroutineScope.launch {
@@ -382,40 +393,28 @@ fun ProductCard(
 
 
 
-                Column {
-                    Text(
-                        "₹ ${product.prodPrice}",
-                        style = AppTheme.textStyles.bold.large,
-                        color = AppTheme.colors.primary
-                    )
-                    Text(
-                        text = displayQuantity(product),
-                        style = AppTheme.textStyles.regular.regular,
-                        color = AppTheme.colors.textColorLight
-                    )
-
-                    CustomCard(
-                        cardColor = AppTheme.colors.primary,
-                        cardCorner = 20,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp)
-                            .padding(top = 10.dp),
-                        onClick = { addToCard() }
-                    ) {
-                        Row(
-                            Modifier.fillMaxSize(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                "Add to cart",
-                                style = AppTheme.textStyles.bold.regular
-                            )
-                        }
-
+                Row {
+                    Column {
+                        Text(
+                            "₹ ${product.prodPrice}",
+                            style = AppTheme.textStyles.bold.large,
+                            color = AppTheme.colors.primary
+                        )
+                        Text(
+                            text = displayQuantity(product),
+                            style = AppTheme.textStyles.regular.regular,
+                            color = AppTheme.colors.textColorLight
+                        )
                     }
-
+                    Spacer(Modifier.weight(1f))
+                    AddButton(
+                        modifier = Modifier.padding(start = 10.dp),
+                        onAddClick = {
+                            coroutineScope.launch {
+                                addToCard()
+                            }
+                        }
+                    )
                 }
 
 
@@ -452,7 +451,7 @@ fun BannerCarousel(banners: List<Int>) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(0.94f)
                 .height(180.dp)
         ) { page ->
             val actualPage = page % banners.size // Get the correct banner index

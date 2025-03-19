@@ -26,10 +26,12 @@ data class AppColors(
     val borderGray: Color,
     val minusGray: Color = Color(0xFFB3B3B3),
     val darkGreen: Color = Color(0xFF005418),
+    val cardShadow: Color
 )
 
 
 val customAppColorsLight = AppColors(
+    cardShadow = Color(0x333A4A5A),
     primary = Color(0xFF23AA49),
     onPrimary = Color(0xFFFAFAFA),
     secondary = Color(0xFFFF324B),
@@ -48,12 +50,13 @@ val customAppColorsLight = AppColors(
     googleButtonColor = Color(0xFF5383EC),
     otpCard = Color(0xFFF0F1F2),
     black = Color(0xFF0D0D0D),
-    borderGray = Color(0xFFE2E2E2),
+    borderGray = Color(0xFF1A2525),
 )
 
 
 
 val customAppColorsDark = AppColors(
+    cardShadow = Color(0x4D8090A0),
     primary = Color(0xFF23AA49),
     onPrimary = Color(0xFFFAFAFA),
     secondary = Color(0xFFFF324B),

@@ -3,12 +3,16 @@ package com.dev.quickcart.data.repository
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import com.dev.quickcart.data.model.CartItem
 
 import com.dev.quickcart.data.model.Product
 import com.dev.quickcart.utils.uriToBlob
 
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -16,12 +20,13 @@ interface NetworkRepository {
 
     suspend fun addProduct(product: Product, imageUri: Uri?): Result<String>
 
-    suspend fun getProduct(productId: String): Result<Product>
     suspend fun getAllProducts(): Result<List<Product>>
-
 
     suspend fun getProducts(productId: String): Product?
 
+    suspend fun addToCart(userId: String, cartItem: CartItem): Result<Unit>
+    suspend fun getCartItems(userId: String): Flow<Result<List<CartItem>>>
+    suspend fun updateCartItemQuantity(userId: String, productId: String, newQuantity: Int): Result<Unit>
 
 }
 
@@ -65,19 +70,6 @@ constructor(
         }
     }
 
-
-
-    override suspend fun getProduct(productId: String): Result<Product> {
-        return try {
-            val document = productsCollection.document(productId).get().await()
-            document.toObject(Product::class.java)?.let {
-                Result.success(it)
-            } ?: Result.failure(Exception("Product not found"))
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
     override suspend fun getAllProducts(): Result<List<Product>> {
         return try {
             val query = productsCollection.get().await()
@@ -104,6 +96,56 @@ constructor(
             null
         }
     }
+
+    override suspend fun addToCart(userId: String, cartItem: CartItem): Result<Unit> {
+        return try {
+
+            val cartRef = firestore.collection("users")
+                .document(userId)
+                .collection("cart")
+                .document(cartItem.productId)
+
+            // Save the cart item to Firestore
+            cartRef.set(cartItem).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            println("Error adding to cart: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getCartItems(userId: String): Flow<Result<List<CartItem>>> = callbackFlow {
+        val listenerRegistration = firestore.collection("users")
+            .document(userId)
+            .collection("cart")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    trySend(Result.failure(error))
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    val cartItems = snapshot.toObjects(CartItem::class.java)
+                    trySend(Result.success(cartItems))
+                }
+            }
+        awaitClose { listenerRegistration.remove() }
+    }
+
+
+    override suspend fun updateCartItemQuantity(userId: String, productId: String, newQuantity: Int): Result<Unit> {
+        return try {
+            firestore.collection("users")
+                .document(userId)
+                .collection("cart")
+                .document(productId)
+                .update("quantity", newQuantity)
+                .await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 
 
 }

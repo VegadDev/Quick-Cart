@@ -9,12 +9,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dev.quickcart.data.model.CartItem
 import com.dev.quickcart.data.model.Product
 import com.dev.quickcart.data.repository.NetworkRepository
 import com.dev.quickcart.navigation.AppScreens
 import com.dev.quickcart.navigation.NavigationCommand
 import com.dev.quickcart.navigation.Navigator
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -24,6 +27,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,6 +36,8 @@ class HomeViewModel
 constructor(
     private val navigator: Navigator,
     private val networkRepository: NetworkRepository,
+    private val firestore: FirebaseFirestore,
+    private val auth: FirebaseAuth,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -62,8 +68,8 @@ constructor(
             navigator.navigate(NavigationCommand.To(AppScreens.CartScreen.route))
         }
 
-        override fun addToCart(product: Product) {
-
+        override suspend fun addToCart(product: Product) {
+            addToCartItem(product)
         }
 
         override fun gotoProfile() {
@@ -75,6 +81,7 @@ constructor(
     init {
         fetchGoogleAccountData()
         fetchAllProducts()
+        observeCartItems()
     }
 
 
@@ -111,6 +118,48 @@ constructor(
                         error = result.exceptionOrNull()?.message
                     )
                     else -> currentState
+                }
+            }
+        }
+    }
+
+
+    fun addToCartItem(product: Product) {
+        viewModelScope.launch {
+            val userId = auth.currentUser?.uid
+            if (userId == null) {
+                _uiState.value = HomeUiState(error = "User not signed in")
+                return@launch
+            }
+
+            val cartItem = CartItem(
+                productId = product.prodId.toString(),
+                productName = product.prodName,
+                productPrice = product.prodPrice.toDouble(),
+                quantity = 1
+            )
+
+            val result = networkRepository.addToCart(userId, cartItem)
+            if (result.isSuccess) {
+                //fetchCartItems() // Refresh the cart
+            } else {
+                _uiState.value = HomeUiState(error = result.exceptionOrNull()?.message)
+            }
+        }
+    }
+
+
+
+    private fun observeCartItems() {
+        viewModelScope.launch {
+            val userId = auth.currentUser?.uid ?: return@launch
+            networkRepository.getCartItems(userId).collect { result ->
+                if (result.isSuccess) {
+                    val cartItems = result.getOrNull() ?: emptyList()
+                    val totalCount = cartItems.sumOf { it.quantity }
+                    uiState.value.cartCount = totalCount
+                } else {
+                    println("Error fetching cart items: ${result.exceptionOrNull()?.message}")
                 }
             }
         }

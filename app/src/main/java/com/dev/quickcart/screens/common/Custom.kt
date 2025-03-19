@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,10 +33,12 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.dev.quickcart.R
+import com.dev.quickcart.screens.home.HomeUiState
 import com.dev.quickcart.ui.theme.AppTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -99,25 +102,55 @@ fun CustomIcon(
     }
 }
 
-
+@Preview(showBackground = true)
 @Composable
-fun AddButton(modifier: Modifier = Modifier, onAddClick: () -> Unit = {}) {
+fun AddButton(
+    modifier: Modifier = Modifier,
+    onAddClick: () -> Unit = {},
+    homeUiState: HomeUiState = HomeUiState()
+) {
 
     Box(
-        modifier = modifier.padding(end = 20.dp, bottom = 20.dp),
-        contentAlignment = Alignment.BottomEnd
+        modifier = Modifier
     ) {
-        FloatingActionButton(
-            onClick = { onAddClick() },
-            containerColor = AppTheme.colors.primary
-        ) {
-            Text(
-                text = "+",
-                fontSize = 35.sp,
-                modifier = Modifier.padding(bottom = 5.dp)
-            )
+        if (homeUiState.isLoadingOnATC) {
+            Box(
+                modifier = Modifier
+            ) {
+                CustomCard(
+                    isClickable = false,
+                    modifier = Modifier,
+                    cardCorner = 40,
+                    cardColor = AppTheme.colors.primary
+                ) {
+                    CustomIcon(
+                        icon = R.drawable.ic_add,
+                        modifier = Modifier.padding(5.dp),
+                        imageModifier = Modifier.size(30.dp),
+                        colorFilter = ColorFilter.tint(AppTheme.colors.titleText)
+                    )
+                }
+                CircularProgressIndicator(
+                    modifier = Modifier.size(40.dp),
+                    color = AppTheme.colors.titleText
+                )
+            }
         }
-
+        else {
+            CustomCard(
+                onClick = { onAddClick() },
+                modifier = Modifier,
+                cardCorner = 40,
+                cardColor = AppTheme.colors.primary
+            ) {
+                CustomIcon(
+                    icon =  R.drawable.ic_add,
+                    modifier = Modifier.padding(5.dp),
+                    imageModifier = Modifier.size(30.dp),
+                    colorFilter = ColorFilter.tint(AppTheme.colors.titleText)
+                )
+            }
+        }
     }
 
 }
@@ -161,11 +194,11 @@ fun NewCard(
         modifier = modifier
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null, // Removes default ripple effect
+                indication = null,
                 onClick = {
                     isPressed = true
                     CoroutineScope(Dispatchers.Main).launch {
-                        delay(150) // Keep the pressed effect for a short time
+                        delay(150) //pressed effect
                         isPressed = false
                     }
                     onClick()
@@ -180,7 +213,7 @@ fun NewCard(
                 .width(tempWidth.dp)
                 .height(tempHeight.dp)
                 .padding(top = 5.dp, start = 5.dp)
-                .background(AppTheme.colors.black, shape = RoundedCornerShape(cardCorner.dp))
+                .background(AppTheme.colors.cardShadow, shape = RoundedCornerShape(cardCorner.dp))
         )
 
 
@@ -190,7 +223,7 @@ fun NewCard(
                 .height(cardHeight.dp)
                 .offset(x = offsetX, y = offsetY) // Moves smoothly when clicked
                 .border(
-                    border = BorderStroke(width = 2.dp, color = AppTheme.colors.black),
+                    border = BorderStroke(width = 2.dp, color = AppTheme.colors.cardShadow),
                     shape = RoundedCornerShape(cardCorner.dp)
                 )
                 .background(cardColor, shape = RoundedCornerShape(cardCorner.dp)),

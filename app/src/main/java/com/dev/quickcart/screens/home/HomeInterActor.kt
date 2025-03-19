@@ -7,7 +7,7 @@ interface HomeInterActor {
     fun updateSearchInput(it: String)
     fun gotoProductPage(it: Int)
     fun gotoCart()
-    fun addToCart(product: Product)
+    suspend fun addToCart(product: Product)
     fun gotoProfile()
 
 }

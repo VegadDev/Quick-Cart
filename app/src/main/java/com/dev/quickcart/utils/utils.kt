@@ -3,6 +3,7 @@ package com.dev.quickcart.utils
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import com.dev.quickcart.data.model.CartItem
 import com.dev.quickcart.data.model.Product
 import com.google.firebase.firestore.Blob
 import com.google.gson.Gson
@@ -83,6 +84,29 @@ fun displayQuantity(product: Product): String {
         "weighed" -> {
             // For weighted products, check the weight
             val weight = product.productTypeValue.toInt()
+            if (weight >= 1000) {
+                // If weight > 1000 grams, convert to kilograms
+                val kg = weight / 1000
+                "$kg kg/price"
+            } else {
+                // If weight <= 1000 grams, show in grams
+                "$weight g/price"
+            }
+        }
+        else -> "Unknown product type"
+    }
+}
+
+fun displayQuantity(cartItem: CartItem): String {
+    return when (cartItem.productType) {
+        "counted" -> {
+            // For counted products, use the countedQuantity and append " piece"
+            val quantity = cartItem.productTypeValue ?: "0"
+            "$quantity piece"
+        }
+        "weighed" -> {
+            // For weighted products, check the weight
+            val weight = cartItem.productTypeValue.toString().toInt()
             if (weight >= 1000) {
                 // If weight > 1000 grams, convert to kilograms
                 val kg = weight / 1000

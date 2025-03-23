@@ -44,7 +44,7 @@ fun ShimmerListItem(
             item {
                 Box(
                     modifier = Modifier
-                        .height(275.dp)
+                        .height(230.dp)
                         .width(160.dp)
                         .clip(RoundedCornerShape(15.dp))
                         .shimmerEffect()
@@ -52,7 +52,7 @@ fun ShimmerListItem(
                 Spacer(Modifier.size(17.dp))
                 Box(
                     modifier = Modifier
-                        .height(275.dp)
+                        .height(230.dp)
                         .width(160.dp)
                         .clip(RoundedCornerShape(15.dp))
                         .shimmerEffect()
@@ -60,7 +60,7 @@ fun ShimmerListItem(
                 Spacer(Modifier.size(17.dp))
                 Box(
                     modifier = Modifier
-                        .height(275.dp)
+                        .height(230.dp)
                         .width(160.dp)
                         .clip(RoundedCornerShape(15.dp))
                         .shimmerEffect()
@@ -87,7 +87,7 @@ fun Modifier.shimmerEffect(): Modifier = composed {
         initialValue = -2 * size.width.toFloat(),
         targetValue = 2 * size.width.toFloat(),
         animationSpec = infiniteRepeatable(
-            animation = tween(1100)
+            animation = tween(1500)
         )
     )
 

@@ -1,6 +1,9 @@
 package com.dev.quickcart.screens.home
 
+import com.dev.quickcart.data.model.CartItem
 import com.dev.quickcart.data.model.Product
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 data class HomeUiState(
 
@@ -19,6 +22,10 @@ data class HomeUiState(
 
     var cartCount: Int = 0,
 
+    val isAdding: Boolean = false, // New field for button loading state
+    val cartItems: List<CartItem> = emptyList(),
+
+    val loadingState: StateFlow<Map<String, Boolean>> = MutableStateFlow(emptyMap()),
 
     )
 

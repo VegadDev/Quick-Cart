@@ -27,6 +27,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.dev.quickcart.R
 import com.dev.quickcart.data.model.Product
@@ -61,6 +63,9 @@ import kotlinx.coroutines.launch
 fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
 
 
+    val coroutineScope = rememberCoroutineScope()
+    val viewModel: HomeViewModel = hiltViewModel()
+    val loadingStates = viewModel.loadingStates.collectAsState().value
 
     Box(
         modifier = Modifier
@@ -177,10 +182,18 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                         modifier = Modifier.padding(horizontal = 20.dp),
                     ) {
                         items(uiState.productList) { item ->
+                            val isLoading = loadingStates[item.prodId.toString()] ?: false
                             ProductCard(
                                 product = item,
                                 onClick = {
                                     interActor.gotoProductPage(item.prodId)
+                                },
+                                isLoading = isLoading,
+                                addToCard = {
+                                    coroutineScope.launch {
+                                        uiState.isLoadingOnATC = false
+                                        interActor.addToCart(item)
+                                    }
                                 }
                             )
                         }
@@ -216,10 +229,18 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                         modifier = Modifier.padding(horizontal = 20.dp),
                     ) {
                         items(vegetablesProducts) { item ->
+                            val isLoading = loadingStates[item.prodId.toString()] ?: false
                             ProductCard(
                                 product = item,
                                 onClick = {
                                         interActor.gotoProductPage(item.prodId)
+                                },
+                                isLoading = isLoading,
+                                addToCard = {
+                                    coroutineScope.launch {
+                                        uiState.isLoadingOnATC = false
+                                        interActor.addToCart(item)
+                                    }
                                 }
                             )
                         }
@@ -246,8 +267,6 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
 
                 val fruitsProducts = uiState.productList.filter { it.productCategory == "Fruits" }
 
-                val coroutineScope = rememberCoroutineScope()
-
                 if (uiState.isLoading){
                     ShimmerListItem(uiState.isLoading)
                 }
@@ -256,18 +275,16 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                         modifier = Modifier.padding(horizontal = 20.dp),
                     ) {
                         items(fruitsProducts) { item ->
+                            val isLoading = loadingStates[item.prodId.toString()] ?: false
                             ProductCard(
                                 product = item,
                                 onClick = {
                                     interActor.gotoProductPage(item.prodId)
                                 },
+                                isLoading = isLoading,
                                 addToCard = {
                                     coroutineScope.launch {
-                                        uiState.isLoadingOnATC = true
-                                        delay(2000)
                                         interActor.addToCart(item)
-                                        uiState.isLoadingOnATC = false
-
                                     }
                                 }
                             )
@@ -275,7 +292,7 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                     }
                 }
 
-
+                Spacer(Modifier.size(100.dp))
             }
 
 
@@ -287,7 +304,7 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                 .padding(bottom = 20.dp, end = 20.dp),
             cardColor = AppTheme.colors.primary,
             cardCorner = 17,
-            cardElevation = 19,
+            cardElevation = 30,
             onClick = { interActor.gotoCart() }
         ) {
             Row(
@@ -300,12 +317,13 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                     color = AppTheme.colors.onPrimary,
                     modifier = Modifier.padding(end = 8.dp),
                 )
+                val cartCount = uiState.cartItems.sumOf { it.quantity }
                 CustomCard(
                     cardColor = AppTheme.colors.darkGreen,
                     isClickable = false
                 ) {
                     Text(
-                        uiState.cartCount.toString(),
+                        cartCount.toString(),
                         style = AppTheme.textStyles.extraBold.regular,
                         color = AppTheme.colors.onPrimary,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp)
@@ -324,6 +342,7 @@ fun ProductCard(
     product: Product,
     onClick: () -> Unit = {},
     addToCard: () -> Unit = {},
+    isLoading: Boolean = false
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -332,7 +351,7 @@ fun ProductCard(
         NewCard(
             modifier = modifier,
             cardWidth = 160,
-            cardHeight = 280,
+            cardHeight = 230,
             cardCorner = 15,
         ) {
             Column(
@@ -409,6 +428,7 @@ fun ProductCard(
                     Spacer(Modifier.weight(1f))
                     AddButton(
                         modifier = Modifier.padding(start = 10.dp),
+                        isLoading = isLoading,
                         onAddClick = {
                             coroutineScope.launch {
                                 addToCard()

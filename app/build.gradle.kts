@@ -84,6 +84,7 @@ dependencies {
 
     implementation(libs.jetpack.compose.components)
     implementation(libs.navigation.animation)
+    implementation(libs.androidx.compose.animation)
 
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pager.indicator)

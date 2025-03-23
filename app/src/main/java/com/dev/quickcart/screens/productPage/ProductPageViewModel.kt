@@ -8,6 +8,7 @@ import com.dev.quickcart.data.repository.NetworkRepository
 import com.dev.quickcart.navigation.NavigationCommand
 import com.dev.quickcart.navigation.Navigator
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,6 +42,7 @@ constructor(
 
     init {
         viewModelScope.launch {
+            delay(300)
             preloadProduct(productPageId.toString())
         }
     }

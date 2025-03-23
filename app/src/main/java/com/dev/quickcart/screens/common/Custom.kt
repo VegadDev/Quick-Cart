@@ -1,19 +1,13 @@
 package com.dev.quickcart.screens.common
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -21,29 +15,29 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.geometry.*
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.dev.quickcart.R
-import com.dev.quickcart.screens.home.HomeUiState
 import com.dev.quickcart.ui.theme.AppTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+
 
 @Composable
 fun CustomCard(
@@ -107,13 +101,14 @@ fun CustomIcon(
 fun AddButton(
     modifier: Modifier = Modifier,
     onAddClick: () -> Unit = {},
-    homeUiState: HomeUiState = HomeUiState()
+    isLoading: Boolean = false,
 ) {
+
 
     Box(
         modifier = Modifier
     ) {
-        if (homeUiState.isLoadingOnATC) {
+        if (isLoading) {
             Box(
                 modifier = Modifier
             ) {
@@ -135,8 +130,7 @@ fun AddButton(
                     color = AppTheme.colors.titleText
                 )
             }
-        }
-        else {
+        } else {
             CustomCard(
                 onClick = { onAddClick() },
                 modifier = Modifier,
@@ -144,7 +138,7 @@ fun AddButton(
                 cardColor = AppTheme.colors.primary
             ) {
                 CustomIcon(
-                    icon =  R.drawable.ic_add,
+                    icon = R.drawable.ic_add,
                     modifier = Modifier.padding(5.dp),
                     imageModifier = Modifier.size(30.dp),
                     colorFilter = ColorFilter.tint(AppTheme.colors.titleText)
@@ -236,8 +230,6 @@ fun NewCard(
 }
 
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyDropDown(
@@ -283,15 +275,14 @@ fun MyDropDown(
                             .padding(bottom = 8.dp),
                     )
                     Spacer(Modifier.weight(1f))
-                    if (title.equals("Select Address")){
+                    if (title.equals("Select Address")) {
                         Text(
                             text = "+ Add new address",
                             style = AppTheme.textStyles.regular.regular,
                             color = AppTheme.colors.primary,
                             modifier = Modifier.clickable { },
                         )
-                    }
-                    else null
+                    } else null
                 }
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
@@ -305,19 +296,27 @@ fun MyDropDown(
                         ) {
                             rowItems.forEach { item ->
                                 CustomCard(
-                                    border = if (selectedItem == item) BorderStroke(1.dp, AppTheme.colors.primary) else null,
+                                    border = if (selectedItem == item) BorderStroke(
+                                        1.dp,
+                                        AppTheme.colors.primary
+                                    ) else null,
                                     onClick = {
                                         selectedItem = item
                                         onItemSelected(item)
                                     },
-                                    modifier = Modifier.weight(1f).padding(6.dp),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(6.dp),
                                     cardCorner = 14
                                 ) {
                                     Text(
                                         item,
                                         style = AppTheme.textStyles.bold.large,
                                         color = if (selectedItem == item) AppTheme.colors.primary else AppTheme.colors.titleText,
-                                        modifier = Modifier.padding(horizontal = 15.dp , vertical = 10.dp)
+                                        modifier = Modifier.padding(
+                                            horizontal = 15.dp,
+                                            vertical = 10.dp
+                                        )
                                     )
                                 }
                             }
@@ -341,7 +340,7 @@ fun MyDropDown(
     NewCard(
         cardWidth = 140,
         cardHeight = 55,
-        cardCorner = corner ,
+        cardCorner = corner,
         cardColor = AppTheme.colors.cardBackgroundColor,
         onClick = { showBottomSheet = true },
         modifier = modifier
@@ -352,7 +351,7 @@ fun MyDropDown(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (isicon){
+            if (isicon) {
                 CustomIcon(
                     icon = R.drawable.ic_location,
                     modifier = Modifier.padding(2.dp),
@@ -360,8 +359,7 @@ fun MyDropDown(
                     colorFilter = ColorFilter.tint(AppTheme.colors.primary)
                 )
 
-            }
-            else null
+            } else null
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = selectedItem,
@@ -408,18 +406,20 @@ fun CustomTextField(
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp),
-        placeholder = { Text(
-            text = hint,
-            style = AppTheme.textStyles.extraBold.large,
-            color = AppTheme.colors.lightGray
-        ) },
+        placeholder = {
+            Text(
+                text = hint,
+                style = AppTheme.textStyles.extraBold.large,
+                color = AppTheme.colors.lightGray
+            )
+        },
         singleLine = true,
         isError = error?.isNotEmpty() ?: false,
         shape = RoundedCornerShape(cornerShape.dp),
         textStyle = textStyle,
         leadingIcon = leadingIcon,
         trailingIcon = {
-            if(value.isNotEmpty()) {
+            if (value.isNotEmpty()) {
                 IconButton(onClick = { onValueChange("") }) {
                     Icon(
                         imageVector = Icons.Default.Clear,
@@ -460,7 +460,7 @@ fun MyButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = backgroundColor
         )
-    ){
+    ) {
 
         Row() {
             icon()
@@ -472,7 +472,6 @@ fun MyButton(
             )
 
         }
-
 
 
     }
@@ -521,6 +520,361 @@ fun ImagePicker(
                 modifier = Modifier.padding(top = 8.dp)
             )
         }
+    }
+}
+
+
+@Composable
+fun SquareBorderProgressIndicator(
+    modifier: Modifier = Modifier,
+    isLoading: Boolean,
+    onClick: () -> Unit = {},
+    icon: Int,
+    iconTint: Color = AppTheme.colors.primary,
+    iconSize: Dp = 17.5.dp,
+    staticBorderColor: Color = AppTheme.colors.minusGray,
+    staticBorderLoadingColor: Color = AppTheme.colors.minusGray,
+    animatedBorderColor: Color = AppTheme.colors.primary,
+    backgroundColor: Color = AppTheme.colors.background,
+    borderWidth: Dp = 1.5.dp,
+    size: Int = 35,
+    cornerRadius: Dp = 10.dp,
+    animationDurationMillis: Int = 800
+) {
+    // Convert Dp to pixels inside the composable using LocalDensity
+    val density = LocalDensity.current
+    val borderWidthPx = with(density) { borderWidth.toPx() }
+    val cornerRadiusPx = with(density) { cornerRadius.toPx() }
+
+    // Log the isLoading state to debug
+    Log.d("ProgressIndicator", "isLoading: $isLoading")
+
+    // Animation progress (0f to 1f)
+    val transition = rememberInfiniteTransition()
+    val progress by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = if (isLoading) 1f else 0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = animationDurationMillis,
+                easing = LinearEasing
+            ),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
+    Box(
+        modifier = modifier
+            .size(size.dp)
+            .background(backgroundColor)
+            .clip(RoundedCornerShape(cornerRadius))
+            .clickable(onClick = onClick), // Add clickable modifier
+        contentAlignment = Alignment.Center
+    ) {
+        Canvas(modifier = Modifier.size(size.dp)) {
+            val squareSize = size.dp.toPx()
+            val halfStroke = borderWidthPx / 2f
+
+            // Define the path for the rounded rectangle
+            val path = Path().apply {
+                val left = halfStroke
+                val top = halfStroke
+                val right = squareSize - halfStroke
+                val bottom = squareSize - halfStroke
+
+                // Start at the top-left (after the corner radius)
+                moveTo(left + cornerRadiusPx, top)
+
+                // Top edge to top-right corner
+                lineTo(right - cornerRadiusPx, top)
+                arcTo(
+                    rect = Rect(
+                        left = right - 2 * cornerRadiusPx,
+                        top = top,
+                        right = right,
+                        bottom = top + 2 * cornerRadiusPx
+                    ),
+                    startAngleDegrees = -90f,
+                    sweepAngleDegrees = 90f,
+                    forceMoveTo = false
+                )
+
+                // Right edge to bottom-right corner
+                lineTo(right, bottom - cornerRadiusPx)
+                arcTo(
+                    rect = Rect(
+                        left = right - 2 * cornerRadiusPx,
+                        top = bottom - 2 * cornerRadiusPx,
+                        right = right,
+                        bottom = bottom
+                    ),
+                    startAngleDegrees = 0f,
+                    sweepAngleDegrees = 90f,
+                    forceMoveTo = false
+                )
+
+                // Bottom edge to bottom-left corner
+                lineTo(left + cornerRadiusPx, bottom)
+                arcTo(
+                    rect = Rect(
+                        left = left,
+                        top = bottom - 2 * cornerRadiusPx,
+                        right = left + 2 * cornerRadiusPx,
+                        bottom = bottom
+                    ),
+                    startAngleDegrees = 90f,
+                    sweepAngleDegrees = 90f,
+                    forceMoveTo = false
+                )
+
+                // Left edge to top-left corner
+                lineTo(left, top + cornerRadiusPx)
+                arcTo(
+                    rect = Rect(
+                        left = left,
+                        top = top,
+                        right = left + 2 * cornerRadiusPx,
+                        bottom = top + 2 * cornerRadiusPx
+                    ),
+                    startAngleDegrees = 180f,
+                    sweepAngleDegrees = 90f,
+                    forceMoveTo = false
+                )
+
+                close()
+            }
+
+            // Draw the static border with rounded corners
+            drawRoundRect(
+                color = if (isLoading) staticBorderLoadingColor else staticBorderColor,
+                topLeft = Offset(halfStroke, halfStroke),
+                size = Size(squareSize - borderWidthPx, squareSize - borderWidthPx),
+                cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx),
+                style = Stroke(width = borderWidthPx)
+            )
+
+            // Draw the animated border if isLoading is true
+            if (isLoading) {
+                Log.d("ProgressIndicator", "Drawing animated border, progress: $progress")
+
+                // Calculate the total perimeter of the rounded rectangle
+                val straightLength = squareSize - borderWidthPx - 2 * cornerRadiusPx
+                val cornerLength = 2 * Math.PI * cornerRadiusPx / 4 // One corner arc length
+                val perimeter = 4 * straightLength + 4 * cornerLength
+                val progressLength = perimeter * progress // Full perimeter animation
+
+                // Define segment lengths
+                val topLength = straightLength
+                val topRightCornerLength = topLength + cornerLength
+                val rightLength = topRightCornerLength + straightLength
+                val bottomRightCornerLength = rightLength + cornerLength
+                val bottomLength = bottomRightCornerLength + straightLength
+                val bottomLeftCornerLength = bottomLength + cornerLength
+                val leftLength = bottomLeftCornerLength + straightLength
+                val topLeftCornerLength = leftLength + cornerLength
+
+                // Create the animated path based on progress
+                val animatedPath = Path().apply {
+                    val left = halfStroke
+                    val top = halfStroke
+                    val right = squareSize - halfStroke
+                    val bottom = squareSize - halfStroke
+
+                    // Start at the top-left (after the corner radius)
+                    moveTo(left + cornerRadiusPx, top)
+
+                    if (progressLength > 0) {
+                        // Top edge
+                        if (progressLength <= topLength) {
+                            lineTo((left + cornerRadiusPx + progressLength).toFloat(), top)
+                        } else {
+                            lineTo(right - cornerRadiusPx, top)
+                        }
+
+                        // Top-right corner
+                        if (progressLength > topLength && progressLength <= topRightCornerLength) {
+                            val cornerProgress = (progressLength - topLength) / cornerLength
+                            arcTo(
+                                rect = Rect(
+                                    left = right - 2 * cornerRadiusPx,
+                                    top = top,
+                                    right = right,
+                                    bottom = top + 2 * cornerRadiusPx
+                                ),
+                                startAngleDegrees = -90f,
+                                sweepAngleDegrees = (90f * cornerProgress).toFloat(),
+                                forceMoveTo = false
+                            )
+                        } else if (progressLength > topRightCornerLength) {
+                            arcTo(
+                                rect = Rect(
+                                    left = right - 2 * cornerRadiusPx,
+                                    top = top,
+                                    right = right,
+                                    bottom = top + 2 * cornerRadiusPx
+                                ),
+                                startAngleDegrees = -90f,
+                                sweepAngleDegrees = 90f,
+                                forceMoveTo = false
+                            )
+                        }
+
+                        // Right edge
+                        if (progressLength > topRightCornerLength && progressLength <= rightLength) {
+                            val rightProgress = (progressLength - topRightCornerLength) / straightLength
+                            lineTo(right,
+                                (top + cornerRadiusPx + straightLength * rightProgress).toFloat()
+                            )
+                        } else if (progressLength > rightLength) {
+                            lineTo(right, bottom - cornerRadiusPx)
+                        }
+
+                        // Bottom-right corner
+                        if (progressLength > rightLength && progressLength <= bottomRightCornerLength) {
+                            val cornerProgress = (progressLength - rightLength) / cornerLength
+                            arcTo(
+                                rect = Rect(
+                                    left = right - 2 * cornerRadiusPx,
+                                    top = bottom - 2 * cornerRadiusPx,
+                                    right = right,
+                                    bottom = bottom
+                                ),
+                                startAngleDegrees = 0f,
+                                sweepAngleDegrees = (90f * cornerProgress).toFloat(),
+                                forceMoveTo = false
+                            )
+                        } else if (progressLength > bottomRightCornerLength) {
+                            arcTo(
+                                rect = Rect(
+                                    left = right - 2 * cornerRadiusPx,
+                                    top = bottom - 2 * cornerRadiusPx,
+                                    right = right,
+                                    bottom = bottom
+                                ),
+                                startAngleDegrees = 0f,
+                                sweepAngleDegrees = 90f,
+                                forceMoveTo = false
+                            )
+                        }
+
+                        // Bottom edge
+                        if (progressLength > bottomRightCornerLength && progressLength <= bottomLength) {
+                            val bottomProgress = (progressLength - bottomRightCornerLength) / straightLength
+                            lineTo((right - cornerRadiusPx - straightLength * bottomProgress).toFloat(), bottom)
+                        } else if (progressLength > bottomLength) {
+                            lineTo(left + cornerRadiusPx, bottom)
+                        }
+
+                        // Bottom-left corner
+                        if (progressLength > bottomLength && progressLength <= bottomLeftCornerLength) {
+                            val cornerProgress = (progressLength - bottomLength) / cornerLength
+                            arcTo(
+                                rect = Rect(
+                                    left = left,
+                                    top = bottom - 2 * cornerRadiusPx,
+                                    right = left + 2 * cornerRadiusPx,
+                                    bottom = bottom
+                                ),
+                                startAngleDegrees = 90f,
+                                sweepAngleDegrees = (90f * cornerProgress).toFloat(),
+                                forceMoveTo = false
+                            )
+                        } else if (progressLength > bottomLeftCornerLength) {
+                            arcTo(
+                                rect = Rect(
+                                    left = left,
+                                    top = bottom - 2 * cornerRadiusPx,
+                                    right = left + 2 * cornerRadiusPx,
+                                    bottom = bottom
+                                ),
+                                startAngleDegrees = 90f,
+                                sweepAngleDegrees = 90f,
+                                forceMoveTo = false
+                            )
+                        }
+
+                        // Left edge
+                        if (progressLength > bottomLeftCornerLength && progressLength <= leftLength) {
+                            val leftProgress = (progressLength - bottomLeftCornerLength) / straightLength
+                            lineTo(left,
+                                (bottom - cornerRadiusPx - straightLength * leftProgress).toFloat()
+                            )
+                        } else if (progressLength > leftLength) {
+                            lineTo(left, top + cornerRadiusPx)
+                        }
+
+                        // Top-left corner
+                        if (progressLength > leftLength && progressLength <= topLeftCornerLength) {
+                            val cornerProgress = (progressLength - leftLength) / cornerLength
+                            arcTo(
+                                rect = Rect(
+                                    left = left,
+                                    top = top,
+                                    right = left + 2 * cornerRadiusPx,
+                                    bottom = top + 2 * cornerRadiusPx
+                                ),
+                                startAngleDegrees = 180f,
+                                sweepAngleDegrees = (90f * cornerProgress).toFloat(),
+                                forceMoveTo = false
+                            )
+                        } else if (progressLength > topLeftCornerLength) {
+                            arcTo(
+                                rect = Rect(
+                                    left = left,
+                                    top = top,
+                                    right = left + 2 * cornerRadiusPx,
+                                    bottom = top + 2 * cornerRadiusPx
+                                ),
+                                startAngleDegrees = 180f,
+                                sweepAngleDegrees = 90f,
+                                forceMoveTo = false
+                            )
+                        }
+                    }
+                }
+
+                // Draw the animated path
+                drawPath(
+                    path = animatedPath,
+                    color = animatedBorderColor,
+                    style = Stroke(width = borderWidthPx)
+                )
+            }
+        }
+
+        // Custom icon with tint and size
+        Icon(
+            painter = painterResource(id = icon),
+            contentDescription = "Custom Icon",
+            tint = iconTint,
+            modifier = Modifier.size(iconSize)
+        )
+    }
+}
+
+
+
+@Composable
+fun DashedLine(
+    color: Color = Color.LightGray,
+    thickness: Float = 1f,
+    dashWidth: Float = 10f,
+    dashGap: Float = 5f,
+    modifier: Modifier = Modifier
+        .fillMaxWidth()
+        .height(1.dp)
+) {
+    Canvas(modifier = modifier) {
+        drawLine(
+            color = color,
+            start = Offset(0f, 0f),
+            end = Offset(size.width, 0f),
+            strokeWidth = thickness,
+            pathEffect = PathEffect.dashPathEffect(
+                intervals = floatArrayOf(dashWidth, dashGap),
+                phase = 0f
+            )
+        )
     }
 }
 

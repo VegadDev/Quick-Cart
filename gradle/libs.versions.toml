@@ -31,6 +31,7 @@ play-services-auth = "20.7.0"
 firebase-firestore = "25.1.2"
 firebase-bom = "33.10.0"
 coroutinesPlayServices = "1.7.3"
+composeAnimation = "1.7.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -70,6 +71,7 @@ play-services-auth = { group = "com.google.android.gms", name = "play-services-a
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebase-firestore" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 kotlinx-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "coroutinesPlayServices" }
+androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "composeAnimation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

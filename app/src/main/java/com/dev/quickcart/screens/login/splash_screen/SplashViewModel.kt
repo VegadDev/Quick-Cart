@@ -47,7 +47,7 @@ constructor(
             if (networkChecker.isInternetAvailable()) {
                 try {
                     val account = GoogleSignIn.getLastSignedInAccount(context)
-                    delay(200)
+                    delay(500)
                     if (account != null) {
                         if (account.email == adminEmail) {
                             navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.AdminScreen.route))

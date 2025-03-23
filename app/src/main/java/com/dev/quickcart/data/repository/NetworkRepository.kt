@@ -9,6 +9,7 @@ import com.dev.quickcart.data.model.Product
 import com.dev.quickcart.utils.uriToBlob
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -24,9 +25,13 @@ interface NetworkRepository {
 
     suspend fun getProducts(productId: String): Product?
 
-    suspend fun addToCart(userId: String, cartItem: CartItem): Result<Unit>
+    suspend fun addOrUpdateCartItem(userId: String, cartItem: CartItem): Result<Unit>
+
     suspend fun getCartItems(userId: String): Flow<Result<List<CartItem>>>
+
     suspend fun updateCartItemQuantity(userId: String, productId: String, newQuantity: Int): Result<Unit>
+
+    fun listenToCartItems(userId: String, onUpdate: (List<CartItem>) -> Unit): ListenerRegistration
 
 }
 
@@ -97,19 +102,28 @@ constructor(
         }
     }
 
-    override suspend fun addToCart(userId: String, cartItem: CartItem): Result<Unit> {
+    override suspend fun addOrUpdateCartItem(userId: String, cartItem: CartItem): Result<Unit> {
         return try {
-
             val cartRef = firestore.collection("users")
                 .document(userId)
                 .collection("cart")
                 .document(cartItem.productId)
 
-            // Save the cart item to Firestore
-            cartRef.set(cartItem).await()
+            firestore.runTransaction { transaction ->
+                val snapshot = transaction.get(cartRef)
+                if (snapshot.exists()) {
+                    // Item exists, increment quantity
+                    val currentQuantity = snapshot.getLong("quantity")?.toInt() ?: 1
+                    transaction.update(cartRef, "quantity", currentQuantity + 1)
+                } else {
+                    // Item doesn’t exist, add it with quantity 1
+                    transaction.set(cartRef, cartItem)
+                }
+            }.await()
+
             Result.success(Unit)
         } catch (e: Exception) {
-            println("Error adding to cart: ${e.message}")
+            println("Error adding/updating cart item: ${e.message}")
             Result.failure(e)
         }
     }
@@ -146,7 +160,21 @@ constructor(
         }
     }
 
-
+    override fun listenToCartItems(userId: String, onUpdate: (List<CartItem>) -> Unit): ListenerRegistration {
+        val cartRef = firestore.collection("users")
+            .document(userId)
+            .collection("cart")
+        return cartRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                println("Error listening to cart: ${error.message}")
+                return@addSnapshotListener
+            }
+            snapshot?.let {
+                val cartItems = it.toObjects(CartItem::class.java)
+                onUpdate(cartItems)
+            }
+        }
+    }
 
 }
 

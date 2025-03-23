@@ -64,7 +64,11 @@ fun ProductPageScreen(interActor: ProductPageInterActor, uiState: ProductPageUiS
 
 
     if (uiState.isLoading){
-        CircularProgressIndicator()
+        CircularProgressIndicator(
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentSize(Alignment.Center)
+        )
     }
     else {
 
@@ -286,12 +290,14 @@ fun ProductPageScreen(interActor: ProductPageInterActor, uiState: ProductPageUiS
                                         .padding(start = 10.dp)
                                         .padding(vertical = 16.dp)
                                 ) {
-                                    Text(
-                                        "${uiState.prodCalories} Gram",
-                                        style = AppTheme.textStyles.bold.large,
-                                        color = AppTheme.colors.primary,
-                                        modifier = Modifier
-                                    )
+                                    uiState.products?.let {
+                                        Text(
+                                            "${it.prodCalories} Gram",
+                                            style = AppTheme.textStyles.bold.large,
+                                            color = AppTheme.colors.primary,
+                                            modifier = Modifier
+                                        )
+                                    }
                                     Text(
                                         "Calories",
                                         style = AppTheme.textStyles.bold.large,
@@ -327,12 +333,14 @@ fun ProductPageScreen(interActor: ProductPageInterActor, uiState: ProductPageUiS
                                         .padding(start = 10.dp)
                                         .padding(vertical = 16.dp)
                                 ) {
-                                    Text(
-                                        "${uiState.prodFiber} Gram",
-                                        style = AppTheme.textStyles.bold.large,
-                                        color = AppTheme.colors.primary,
-                                        modifier = Modifier
-                                    )
+                                    uiState.products?.let {
+                                        Text(
+                                            "${it.prodFiber} Gram",
+                                            style = AppTheme.textStyles.bold.large,
+                                            color = AppTheme.colors.primary,
+                                            modifier = Modifier
+                                        )
+                                    }
                                     Text(
                                         "Fiber",
                                         style = AppTheme.textStyles.bold.large,
@@ -364,12 +372,14 @@ fun ProductPageScreen(interActor: ProductPageInterActor, uiState: ProductPageUiS
                                         .padding(start = 10.dp)
                                         .padding(vertical = 16.dp)
                                 ) {
-                                    Text(
-                                        "${uiState.prodFat} Gram",
-                                        style = AppTheme.textStyles.bold.large,
-                                        color = AppTheme.colors.primary,
-                                        modifier = Modifier
-                                    )
+                                    uiState.products?.let {
+                                        Text(
+                                            "${it.prodFat} Gram",
+                                            style = AppTheme.textStyles.bold.large,
+                                            color = AppTheme.colors.primary,
+                                            modifier = Modifier
+                                        )
+                                    }
                                     Text(
                                         "Fat",
                                         style = AppTheme.textStyles.bold.large,
@@ -380,11 +390,9 @@ fun ProductPageScreen(interActor: ProductPageInterActor, uiState: ProductPageUiS
                             }
                         }
                     }
-
                 }
             }
         }
-
     }
 }
 

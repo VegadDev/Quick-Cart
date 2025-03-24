@@ -1,7 +1,6 @@
 package com.dev.quickcart.screens.home
 
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,18 +44,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.dev.quickcart.R
 import com.dev.quickcart.data.model.Product
-import com.dev.quickcart.screens.addProduct.stringToByteArray
 import com.dev.quickcart.screens.common.AddButton
-import com.dev.quickcart.screens.common.MyDropDown
 import com.dev.quickcart.screens.common.CustomCard
 import com.dev.quickcart.screens.common.CustomIcon
 import com.dev.quickcart.screens.common.CustomTextField
+import com.dev.quickcart.screens.common.MyDropDown
 import com.dev.quickcart.screens.common.NewCard
 import com.dev.quickcart.screens.common.ShimmerListItem
-import com.dev.quickcart.screens.common.shimmerEffect
 import com.dev.quickcart.ui.theme.AppTheme
 import com.dev.quickcart.utils.displayQuantity
-import com.dev.quickcart.utils.uriToBlob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -396,17 +393,18 @@ fun ProductCard(
                         .padding(top = 10.dp, bottom = 10.dp),
                     horizontalArrangement = Arrangement.Center,
                 ) {
-                    val byteArray = product.prodImage.toBytes()
-                    val bitmap = byteArray.let { BitmapFactory.decodeByteArray(it, 0, it.size) }
-                    if (bitmap != null) {
-                        Image(
-                            bitmap = bitmap.asImageBitmap(),
-                            contentDescription = null,
-                            filterQuality = FilterQuality.Low,
-                            modifier = Modifier.fillMaxSize(),
-                        )
-                    } else {
-                        Text("Failed to load image")
+                    product.prodImage.let { blob ->
+                        val bitmap = remember(blob) { // Cache bitmap decoding
+                            BitmapFactory.decodeByteArray(blob.toBytes(), 0, blob.toBytes().size)
+                        }
+                        bitmap?.let {
+                            Image(
+                                bitmap = it.asImageBitmap(),
+                                contentDescription = "Product Image",
+                                filterQuality = FilterQuality.Low,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                        }
                     }
                 }
 

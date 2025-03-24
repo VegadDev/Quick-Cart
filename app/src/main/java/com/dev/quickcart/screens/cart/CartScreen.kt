@@ -38,126 +38,174 @@ fun CartScreen(interActor: CartInterActor, uiState: CartUiState) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-
-        BottomSheetExample(
-            interactor = interActor,
-            uiState = uiState,
-        ) {
+        if (uiState.totalPrice == 0.0){
             Column(
                 Modifier
                     .fillMaxSize()
-                    .background(AppTheme.colors.background)
+                    .background(AppTheme.colors.background),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 0.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(space = 120.dp),
             ) {
 
-                Row(
+                CustomIcon(
+                    icon = R.drawable.ic_back_arrow,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 0.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(space = 100.dp),
+                        .padding(start = 16.dp , top = 15.dp)
+                        .clickable { interActor.onBackClick() },
+                    imageModifier = Modifier.size(25.dp),
+                    colorFilter = ColorFilter.tint(AppTheme.colors.onPrimary)
+                )
+
+
+                Text(
+                    "My Cart 🛒",
+                    style = AppTheme.textStyles.bold.largeTitle,
+                    color = AppTheme.colors.titleText,
+                    modifier = Modifier.padding(top = 15.dp)
+                )
+
+            }
+            Divider(
+                color = AppTheme.colors.lightGray,
+                thickness = 1.dp,
+                modifier = Modifier.padding(top = 20.dp)
+            )
+            CustomIcon(
+                icon = R.drawable.ic_emptycart,
+                modifier = Modifier.weight(0.8f),
+                imageModifier = Modifier.size(250.dp),
+            )
+            Text(
+                "Your cart is empty 😒",
+                style = AppTheme.textStyles.bold.largeTitle,
+                color = AppTheme.colors.titleText,
+                modifier = Modifier.padding(top = 15.dp).weight(0.9f)
+            )
+            }
+        }
+        else {
+            BottomSheetExample(
+                interactor = interActor,
+                uiState = uiState,
+            ) {
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .background(AppTheme.colors.background)
                 ) {
-                    CustomCard(
-                        cardColor = AppTheme.colors.primary,
-                        cardCorner = 50,
-                        onClick = { interActor.onBackClick() },
-                        modifier = Modifier.padding(start = 20.dp, top = 20.dp)
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 0.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(space = 120.dp),
                     ) {
+
                         CustomIcon(
                             icon = R.drawable.ic_back_arrow,
                             modifier = Modifier
-                                .padding(9.dp)
-                                .padding(end = 2.dp),
+                                .padding(start = 16.dp, top = 15.dp)
+                                .clickable { interActor.onBackClick() },
                             imageModifier = Modifier.size(25.dp),
                             colorFilter = ColorFilter.tint(AppTheme.colors.onPrimary)
                         )
-                    }
 
-                    Text(
-                        "My Cart 🛒",
-                        style = AppTheme.textStyles.bold.largeTitle,
-                        color = AppTheme.colors.titleText,
-                        modifier = Modifier.padding(top = 15.dp)
+
+                        Text(
+                            "My Cart 🛒",
+                            style = AppTheme.textStyles.bold.largeTitle,
+                            color = AppTheme.colors.titleText,
+                            modifier = Modifier.padding(top = 15.dp)
+                        )
+
+                    }
+                    Divider(
+                        color = AppTheme.colors.lightGray,
+                        thickness = 1.dp,
+                        modifier = Modifier.padding(top = 20.dp)
                     )
 
-                }
-                Divider(
-                    color = AppTheme.colors.lightGray,
-                    thickness = 1.dp,
-                    modifier = Modifier.padding(top = 20.dp)
-                )
-
-                LazyColumn(
-                    modifier = Modifier.padding(top = 10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    items(uiState.cartItems) { item ->
-                        val isLoadingMinus = uiState.loadingItemsMinus[item.productId] ?: false
-                        val isLoadingPlus = uiState.loadingItemsPlus[item.productId] ?: false
-                        CartItemCard(
-                            cartItem = item,
-                            isLoadingMinus = isLoadingMinus,
-                            isLoadingPlus = isLoadingPlus,
-                            onRemove = { interActor.onRemoveClick(item.productId) },
-                            onIncrement = { interActor.onIncrementClick(item.productId) },
-                            onDecrement = { interActor.onDecrementClick(item.productId) }
-                        )
-                        Divider(
-                            color = AppTheme.colors.lightGray,
-                            thickness = 1.dp,
-                            modifier = Modifier
-                                .fillMaxWidth(0.9f)
-                                .padding(vertical = 15.dp)
-                        )
+                    LazyColumn(
+                        modifier = Modifier.padding(top = 10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        items(
+                            items = uiState.cartItems,
+                            key = { item -> item.productId }
+                        ) { item ->
+                            val isLoadingMinus = uiState.loadingItemsMinus[item.productId] ?: false
+                            val isLoadingPlus = uiState.loadingItemsPlus[item.productId] ?: false
+                            CartItemCard(
+                                cartItem = item,
+                                isLoadingMinus = isLoadingMinus,
+                                isLoadingPlus = isLoadingPlus,
+                                onRemove = { interActor.onRemoveClick(item.productId) },
+                                onIncrement = { interActor.onIncrementClick(item.productId) },
+                                onDecrement = { interActor.onDecrementClick(item.productId) }
+                            )
+                        }
                     }
+
+
                 }
 
 
             }
 
-
-        }
-
-        CustomCard(
-            modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
-            cardColor = AppTheme.colors.billCardBg
-        ){
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+            CustomCard(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+                cardColor = AppTheme.colors.billCardBg
             ) {
-                DashedLine(
-                    color = AppTheme.colors.divider,
-                    thickness = 7f,
-                    dashWidth = 40f,
-                    dashGap = 20f,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 15.dp)
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(15.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        "Grand total",
-                        style = AppTheme.textStyles.extraBold.largeTitle,
-                        color = AppTheme.colors.titleText,
-                        fontSize = 19.sp
+                    DashedLine(
+                        color = AppTheme.colors.divider,
+                        thickness = 7f,
+                        dashWidth = 40f,
+                        dashGap = 20f,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 15.dp)
                     )
-                    Spacer(Modifier.weight(1f))
-                    val total = uiState.cartTotal
-                    Text(
-                        "₹ $total",
-                        style = AppTheme.textStyles.regular.large,
-                        color = AppTheme.colors.titleText
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(15.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Grand total",
+                            style = AppTheme.textStyles.extraBold.largeTitle,
+                            color = AppTheme.colors.titleText,
+                            fontSize = 19.sp
+                        )
+                        Spacer(Modifier.weight(1f))
+                        val total = uiState.totalPrice + 40 + 15
+                        Text(
+                            "₹ $total",
+                            style = AppTheme.textStyles.regular.large,
+                            color = AppTheme.colors.titleText
+                        )
+                    }
+                    MyButton(
+                        "Check Out",
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .padding(bottom = 15.dp)
                     )
                 }
-                MyButton(
-                    "Check Out",
-                    modifier = Modifier.fillMaxWidth(0.9f).padding(bottom = 15.dp)
-                )
             }
         }
     }
@@ -169,7 +217,7 @@ fun BottomSheetExample(
     modifier: Modifier = Modifier,
     interactor: CartInterActor,
     uiState: CartUiState,
-    sheetContent: @Composable (() -> Unit) = {}
+    sheetContent: @Composable (() -> Unit) = {},
 ) {
     // Scaffold state to manage the bottom sheet's collapsed/expanded states
     val scaffoldState = rememberBottomSheetScaffoldState(
@@ -208,7 +256,7 @@ fun BottomSheetExample(
                         )
                         Spacer(Modifier.weight(1f))
                         Text(
-                            "₹ 200.0",
+                            "₹ ${uiState.totalPrice}",
                             style = AppTheme.textStyles.regular.large,
                             color = AppTheme.colors.billCardText
                         )
@@ -279,7 +327,7 @@ fun BottomSheetExample(
                         style = AppTheme.textStyles.extraBold.largeTitle,
                         color = AppTheme.colors.titleText,
                         fontSize = 17.sp,
-                        modifier = Modifier.padding(top = 5.dp , start = 2.dp)
+                        modifier = Modifier.padding(top = 5.dp, start = 2.dp)
                     )
                     // Show "Show details" only in collapsed state
                     if (!scaffoldState.bottomSheetState.isExpanded) {
@@ -320,7 +368,7 @@ fun CartItemCard(
     isLoadingPlus: Boolean,
     onRemove: () -> Unit = {},
     onIncrement: () -> Unit = {},
-    onDecrement: () -> Unit = {}
+    onDecrement: () -> Unit = {},
 ) {
 
     Row(
@@ -330,20 +378,24 @@ fun CartItemCard(
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        Log.d("Image:", cartItem.productImage.toString())
-        val byteArray = cartItem.productImage?.toBytes()
-        val bitmap =
-            byteArray.let { it?.let { it1 -> BitmapFactory.decodeByteArray(it, 0, it1.size) } }
-        if (bitmap != null) {
-            Image(
-                bitmap = bitmap.asImageBitmap(),
-                contentDescription = null,
-                filterQuality = FilterQuality.Low,
-                modifier = Modifier.size(70.dp),
-            )
-        } else {
-            Text("Failed to load image")
-        }
+        cartItem.productImage?.let { blob ->
+            val bitmap = remember(blob) { // Cache bitmap decoding
+                BitmapFactory.decodeByteArray(blob.toBytes(), 0, blob.toBytes().size)
+            }
+            bitmap?.let {
+                Image(
+                    bitmap = it.asImageBitmap(),
+                    contentDescription = "Product Image",
+                    filterQuality = FilterQuality.Low,
+                    modifier = Modifier.size(70.dp),
+                )
+            }
+        } ?: Text(
+            text = "No image",
+            modifier = Modifier
+                .size(80.dp)
+                .padding(end = 16.dp),
+        )
         Column(
             modifier = Modifier.padding(start = 15.dp)
         ) {
@@ -421,5 +473,11 @@ fun CartItemCard(
         }
 
     }
-
+    Divider(
+        color = AppTheme.colors.lightGray,
+        thickness = 1.dp,
+        modifier = Modifier
+            .fillMaxWidth(0.9f)
+            .padding(top = 10.dp)
+    )
 }

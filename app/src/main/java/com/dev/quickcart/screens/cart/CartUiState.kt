@@ -9,7 +9,9 @@ data class CartUiState(
     val error: String? = null,
     var loadingItemsMinus: Map<String, Boolean> = emptyMap(),
     var loadingItemsPlus: Map<String, Boolean> = emptyMap(),
+    val loadingItems: Map<String, Boolean> = emptyMap(),
     var cartCount: Int = 0,
     var cartTotal: Int = 0,
+    val totalPrice: Double = 0.0,
 
     )

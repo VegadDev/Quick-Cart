@@ -130,15 +130,21 @@ constructor(
 
     fun addToCartItem(product: Product) {
         viewModelScope.launch {
-
             val userId = auth.currentUser?.uid
             if (userId == null) {
                 _uiState.value = HomeUiState(error = "User not signed in")
                 return@launch
             }
 
-            // Show loading state for 1 second
-            _uiState.value = _uiState.value.copy(isAdding = true)
+            // Optimistic update: Increment cart count locally
+            val newCartCount = _uiState.value.cartCount + 1
+            _uiState.value = _uiState.value.copy(cartCount = newCartCount)
+
+            // Set loading state for this product
+            _loadingStates.value = _loadingStates.value.toMutableMap().apply {
+                put(product.prodId.toString(), true)
+            }
+
             val cartItem = CartItem(
                 productId = product.prodId.toString(),
                 productName = product.prodName,
@@ -149,22 +155,18 @@ constructor(
                 quantity = 1
             )
 
-            _loadingStates.value = _loadingStates.value.toMutableMap().apply {
-                put(product.prodId.toString(), true)
-            }
             val result = networkRepository.addOrUpdateCartItem(userId, cartItem)
-            delay(1000)
-            _loadingStates.value = _loadingStates.value.toMutableMap().apply {
-                put(product.prodId.toString(), false)
-            }
-            _uiState.value = when {
-                result.isSuccess -> _uiState.value.copy(
-
-                )
-                else -> _uiState.value.copy(
-                    isAdding = false,
+            if (result.isFailure) {
+                // Rollback on error
+                _uiState.value = _uiState.value.copy(
+                    cartCount = _uiState.value.cartCount - 1,
                     error = result.exceptionOrNull()?.message
                 )
+            }
+
+            // Clear loading state (no delay needed)
+            _loadingStates.value = _loadingStates.value.toMutableMap().apply {
+                put(product.prodId.toString(), false)
             }
         }
     }
@@ -175,6 +177,21 @@ constructor(
             val userId = auth.currentUser?.uid ?: return@launch
             cartListener = networkRepository.listenToCartItems(userId) { cartItems ->
                 _uiState.value = _uiState.value.copy(cartItems = cartItems)
+            }
+        }
+    }
+
+    private fun listenToCartChanges() {
+        viewModelScope.launch {
+            val userId = auth.currentUser?.uid ?: return@launch
+            networkRepository.getCartItems(userId).collect { result ->
+                if (result.isSuccess) {
+                    val cartItems = result.getOrNull() ?: emptyList()
+                    val totalCount = cartItems.sumOf { it.quantity }
+                    _uiState.value = _uiState.value.copy(cartCount = totalCount)
+                } else {
+                    _uiState.value = _uiState.value.copy(cartCount = 0)
+                }
             }
         }
     }

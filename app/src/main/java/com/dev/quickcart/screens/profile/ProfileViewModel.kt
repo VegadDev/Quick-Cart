@@ -48,6 +48,10 @@ constructor(
             navigator.navigate(NavigationCommand.To(AppScreens.EditProfileScreen.route))
         }
 
+        override fun onAddressesClick() {
+            navigator.navigate(NavigationCommand.To(AppScreens.AddressScreen.route))
+        }
+
     }
 
     //Gson().toJson(it)

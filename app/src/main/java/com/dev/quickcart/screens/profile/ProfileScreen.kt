@@ -207,7 +207,7 @@ fun ProfileScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 30.dp, start = 15.dp, end = 15.dp)
-                            .clickable{  },
+                            .clickable{ interActor.onAddressesClick() },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         CustomIcon(

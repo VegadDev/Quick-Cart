@@ -6,6 +6,7 @@ import android.util.Log
 import com.dev.quickcart.data.model.CartItem
 
 import com.dev.quickcart.data.model.Product
+import com.dev.quickcart.data.model.UserAddress
 import com.dev.quickcart.utils.uriToBlob
 
 import com.google.firebase.firestore.FirebaseFirestore
@@ -14,6 +15,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -24,6 +26,8 @@ interface NetworkRepository {
     suspend fun getAllProducts(): Result<List<Product>>
 
     suspend fun getProducts(productId: String): Product?
+
+    fun getUserAddresses(userId: String): Flow<Result<List<UserAddress>>>
 
     suspend fun addOrUpdateCartItem(userId: String, cartItem: CartItem): Result<Unit>
 
@@ -100,6 +104,45 @@ constructor(
             Log.e("FirestoreDebug", "Failed to get product: ${e.message}", e)
             null
         }
+    }
+
+    override fun getUserAddresses(userId: String): Flow<Result<List<UserAddress>>> = callbackFlow {
+        // Ensure userId is valid
+        if (userId.isBlank()) {
+            trySend(Result.failure(IllegalArgumentException("User ID cannot be blank")))
+            close()
+            return@callbackFlow
+        }
+
+        val addressesRef = firestore.collection("users")
+            .document(userId)
+            .collection("addresses")
+
+        // Real-time listener
+        val listener = addressesRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                trySend(Result.failure(error))
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null) {
+                val addresses = snapshot.documents.mapNotNull { doc ->
+                    try {
+                        doc.toObject(UserAddress::class.java)?.copy(category = doc.id)
+                    } catch (e: Exception) {
+                        null // Skip malformed documents
+                    }
+                }
+                trySend(Result.success(addresses))
+            } else {
+                trySend(Result.success(emptyList())) // No data found
+            }
+        }
+
+        // Cleanup listener when Flow is cancelled
+        awaitClose { listener.remove() }
+    }.catch { e ->
+        emit(Result.failure(e)) // Handle any upstream errors
     }
 
     override suspend fun addOrUpdateCartItem(userId: String, cartItem: CartItem): Result<Unit> {

@@ -17,6 +17,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
@@ -32,6 +34,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val navigator: Navigator,
     private val googleSignInClient: GoogleSignInClient,
+    private val firestore: FirebaseFirestore,
     private val firebaseAuth: FirebaseAuth?,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
@@ -100,14 +103,39 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun onSignInSuccess(account: GoogleSignInAccount?) {
-        _uiState.update { it.copy(isLoading = false, userEmail = account?.email) }
-        if (account?.email == adminEmail){
-            navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.AdminScreen.route))
-        }
-        else {
-            navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.HomeScreen.route))
+    fun onSignInSuccess(account: GoogleSignInAccount?) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, userEmail = account?.email, error = null) }
+
+            try {
+                val userId = firebaseAuth?.currentUser?.uid ?: account?.id ?: return@launch
+                if (account?.email == adminEmail) {
+                    // Admin user, go directly to Admin screen
+                    _uiState.update { it.copy(isLoading = false) }
+                    navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.AdminScreen.route))
+                } else {
+                    // Regular user, check for addresses
+                    val addressesSnapshot = firestore.collection("users")
+                        .document(userId)
+                        .collection("addresses")
+                        .get()
+                        .await()
+                    val hasAddress = addressesSnapshot.documents.isNotEmpty()
+
+                    _uiState.update { it.copy(isLoading = false) }
+                    if (hasAddress) {
+                        navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.HomeScreen.route))
+                    } else {
+                        navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.GetProfileScreen.route))
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false, error = "Sign-In Failed: ${e.message}") }
+            }
         }
     }
+
+
+
 }
 

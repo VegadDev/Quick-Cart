@@ -12,8 +12,8 @@ import com.dev.quickcart.screens.login.intro.IntroScreen
 import com.dev.quickcart.screens.login.intro.IntroViewModel
 import com.dev.quickcart.screens.login.login_screen.LoginScreen
 import com.dev.quickcart.screens.login.login_screen.LoginViewModel
-import com.dev.quickcart.screens.login.otp_verification.OtpScreen
-import com.dev.quickcart.screens.login.otp_verification.OtpViewModel
+import com.dev.quickcart.screens.login.get_profileinfo.GetProfileScreen
+import com.dev.quickcart.screens.login.get_profileinfo.GetProfileViewModel
 import com.dev.quickcart.screens.cart.CartScreen
 import com.dev.quickcart.screens.cart.CartViewModel
 import com.dev.quickcart.screens.categories.CategoriesScreen
@@ -26,6 +26,8 @@ import com.dev.quickcart.screens.productPage.ProductPageScreen
 import com.dev.quickcart.screens.productPage.ProductPageViewModel
 import com.dev.quickcart.screens.profile.ProfileScreen
 import com.dev.quickcart.screens.profile.ProfileViewModel
+import com.dev.quickcart.screens.profile.address_screen.AddressScreen
+import com.dev.quickcart.screens.profile.address_screen.AddressViewModel
 import com.dev.quickcart.screens.profile.edit_profile.EditProfileScreen
 import com.dev.quickcart.screens.profile.edit_profile.EditProfileViewModel
 import com.dev.quickcart.screens.settings.SettingScreen
@@ -44,9 +46,10 @@ sealed class AppScreens(val route: String) {
     data object SplashScreen : AppScreens("SplashScreen")
     data object IntroScreen : AppScreens("IntroScreen")
     data object LoginScreen : AppScreens("LoginScreen")
-    data object OtpScreen : AppScreens("OtpScreen")
+    data object GetProfileScreen : AppScreens("GetProfileScreen")
     data object AddScreen : AppScreens("AddScreen")
     data object ProductPageScreen : AppScreens("ProductPageScreen")
+    data object AddressScreen : AppScreens("AddressScreen")
 
 }
 
@@ -101,9 +104,10 @@ val screens = listOf(
         val uiState by viewModel.uiState.collectAsState()
         LoginScreen(interActor = viewModel.interActor , uiState)
     },
-    Screen(AppScreens.OtpScreen.route) {
-        val viewModel = hiltViewModel<OtpViewModel>()
-        OtpScreen(interActor = viewModel.interActor)
+    Screen(AppScreens.GetProfileScreen.route) {
+        val viewModel = hiltViewModel<GetProfileViewModel>()
+        val uiState by viewModel.uiState.collectAsState()
+        GetProfileScreen(interActor = viewModel.interActor , uiState)
     },
     Screen(AppScreens.AddScreen.route) {
         val viewModel = hiltViewModel<AddProductViewModel>()
@@ -115,7 +119,11 @@ val screens = listOf(
         val uiState by viewModel.uiState.collectAsState()
         ProductPageScreen(interActor = viewModel.interActor,uiState)
     },
-
+    Screen(AppScreens.AddressScreen.route) {
+        val viewModel = hiltViewModel<AddressViewModel>()
+        val uiState by viewModel.uiState.collectAsState()
+        AddressScreen(interActor = viewModel.interActor,uiState)
+    },
 
 
 

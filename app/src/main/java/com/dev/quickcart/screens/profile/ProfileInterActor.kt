@@ -4,7 +4,6 @@ interface ProfileInterActor {
 
     fun onBackClick()
 
-    fun onEditProfileClick()
     fun onAddressesClick()
 
     fun onLogoutClick()

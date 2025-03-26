@@ -28,8 +28,6 @@ import com.dev.quickcart.screens.profile.ProfileScreen
 import com.dev.quickcart.screens.profile.ProfileViewModel
 import com.dev.quickcart.screens.profile.address_screen.AddressScreen
 import com.dev.quickcart.screens.profile.address_screen.AddressViewModel
-import com.dev.quickcart.screens.profile.edit_profile.EditProfileScreen
-import com.dev.quickcart.screens.profile.edit_profile.EditProfileViewModel
 import com.dev.quickcart.screens.settings.SettingScreen
 import com.dev.quickcart.screens.settings.SettingViewModel
 
@@ -40,7 +38,6 @@ sealed class AppScreens(val route: String) {
     data object HomeScreen : AppScreens("HomeScreen")
     data object CartScreen : AppScreens("CartScreen")
     data object ProfileScreen : AppScreens("ProfileScreen")
-    data object EditProfileScreen : AppScreens("EditProfileScreen")
     data object SettingScreen : AppScreens("SettingScreen")
     data object CategoriesScreen : AppScreens("CategoriesScreen")
     data object SplashScreen : AppScreens("SplashScreen")
@@ -76,11 +73,6 @@ val screens = listOf(
         val viewModel = hiltViewModel<ProfileViewModel>()
         val uiState by viewModel.uiState.collectAsState()
         ProfileScreen(interActor = viewModel.interActor , uiState)
-    },
-    Screen(AppScreens.EditProfileScreen.route) {
-        val viewModel = hiltViewModel<EditProfileViewModel>()
-        val uiState by viewModel.uiState.collectAsState()
-        EditProfileScreen(interActor = viewModel.interActor , uiState)
     },
     Screen(AppScreens.SettingScreen.route) {
         val viewModel = hiltViewModel<SettingViewModel>()

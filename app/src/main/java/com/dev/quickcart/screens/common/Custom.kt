@@ -235,8 +235,9 @@ fun NewCard(
 fun MyDropDown(
     modifier: Modifier = Modifier,
     items: List<String>,
-    initialItem: String = items[0],
+    initialItem: String = items.firstOrNull() ?: "No Address",
     onItemSelected: (String) -> Unit = {},
+    onNewAddress: () -> Unit = {},
     title: String = "",
     isicon: Boolean = true,
     corner: Int = 30
@@ -280,7 +281,7 @@ fun MyDropDown(
                             text = "+ Add new address",
                             style = AppTheme.textStyles.regular.regular,
                             color = AppTheme.colors.primary,
-                            modifier = Modifier.clickable { },
+                            modifier = Modifier.clickable { onNewAddress() },
                         )
                     } else null
                 }
@@ -375,6 +376,7 @@ fun MyDropDown(
     }
 
 }
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)

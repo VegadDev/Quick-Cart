@@ -150,34 +150,6 @@ fun ProfileScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 30.dp, start = 15.dp, end = 15.dp)
-                            .clickable{ interActor.onEditProfileClick() },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        CustomIcon(
-                            icon = R.drawable.ic_edit_profile,
-                            modifier = Modifier,
-                            imageModifier = Modifier.size(40.dp),
-                            isCircle = false
-                        )
-                        Text(
-                            "Edit Profile",
-                            style = AppTheme.textStyles.regular.regular,
-                            color = AppTheme.colors.titleText,
-                            modifier = Modifier.padding(start = 20.dp),
-                        )
-                        Spacer(Modifier.weight(1f))
-                        CustomIcon(
-                            icon = R.drawable.ic_forward_arrow,
-                            modifier = Modifier,
-                            imageModifier = Modifier.size(20.dp),
-                            colorFilter = ColorFilter.tint(AppTheme.colors.titleText)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 30.dp, start = 15.dp, end = 15.dp)
                             .clickable{  },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -237,12 +209,14 @@ fun ProfileScreen(
                     }
 
                     if (showDialog){
-                        LogoutAlert(
+                        CustomAlert(
                             onDismiss = {showDialog = false},
                             onConfirm = {
                                 showDialog = false
                                 interActor.onLogoutClick()
-                            }
+                            },
+                            message = "Are you sure you want to Logout?",
+                            title = "Logout"
                         )
                     }
 
@@ -387,26 +361,29 @@ fun ProfileScreen(
 
 
 @Composable
-fun LogoutAlert(
+fun CustomAlert(
     onDismiss: () -> Unit,
-    onConfirm: () -> Unit
+    onConfirm: () -> Unit,
+    title: String = "",
+    message: String = ""
 ) {
 
     Dialog(onDismissRequest = onDismiss) {
 
         CustomCard(
             cardColor = AppTheme.colors.cardBackgroundColor,
-            modifier = Modifier.height(150.dp)
+            modifier = Modifier.fillMaxWidth(),
+            isClickable = false,
+            cardCorner = 20
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 Text(
-                    text = "Are you sure you want to Logout?",
+                    text = message,
                     style = AppTheme.textStyles.extraBold.large,
                     color = AppTheme.colors.titleText,
                     modifier = Modifier.padding(top = 15.dp)
@@ -437,17 +414,9 @@ fun LogoutAlert(
                             .height(45.dp),
                         colors = ButtonDefaults.buttonColors(AppTheme.colors.primary),
                         shape = RoundedCornerShape(10.dp)
-                    ) { Text(text = "Logout" , color = AppTheme.colors.onPrimary , style = AppTheme.textStyles.extraBold.regular) }
+                    ) { Text(text = title , color = AppTheme.colors.onPrimary , style = AppTheme.textStyles.extraBold.regular) }
                 }
-
             }
-
-
         }
-
-
     }
-
-
-
 }

@@ -93,7 +93,7 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                         contentScale = ContentScale.Crop,
                         placeholder = painterResource(R.drawable.ic_user),
                         error = painterResource(R.drawable.ic_user),
-                        filterQuality = FilterQuality.Medium
+                        filterQuality = FilterQuality.Low
                     )
 
                     Column(
@@ -116,9 +116,17 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
 
                     Spacer(Modifier.weight(1f))
 
+                    val addressCategories = uiState.addresses.map { it.category }
+                    val initialCategory = addressCategories.firstOrNull() ?: "Select Address"
+
                     MyDropDown(
-                        items = listOf("My Flat", "Home", "Office", "Other"),
-                        title = "Select Address"
+                        items = addressCategories,
+                        initialItem = initialCategory,
+                        onItemSelected = { selected ->
+                            //viewModel.processCheckout(selected)
+                        },
+                        title = "Select Address",
+                        onNewAddress = { interActor.gotoAddAddress() }
                     )
 
                 }

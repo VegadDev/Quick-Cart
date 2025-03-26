@@ -1,6 +1,7 @@
 package com.dev.quickcart.screens.home
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.quickcart.data.model.CartItem
@@ -73,6 +74,9 @@ constructor(
             navigator.navigate(NavigationCommand.To(AppScreens.ProfileScreen.route))
         }
 
+        override fun gotoAddAddress() {
+            navigator.navigate(NavigationCommand.To(AppScreens.GetProfileScreen.route))
+        }
 
 
     }
@@ -81,6 +85,7 @@ constructor(
         fetchGoogleAccountData()
         fetchAllProducts()
         startCartListener()
+        fetchAddresses()
     }
 
     override fun onCleared() {
@@ -93,7 +98,7 @@ constructor(
         if (account != null) {
             _uiState.update {
                 it.copy(
-                    userName = account.displayName ?: "Guest",
+                    //userName = account.displayName ?: "Guest",
                     userImage = account.photoUrl?.toString()
                 )
             }
@@ -181,16 +186,19 @@ constructor(
         }
     }
 
-    private fun listenToCartChanges() {
+    private fun fetchAddresses() {
         viewModelScope.launch {
             val userId = auth.currentUser?.uid ?: return@launch
-            networkRepository.getCartItems(userId).collect { result ->
-                if (result.isSuccess) {
-                    val cartItems = result.getOrNull() ?: emptyList()
-                    val totalCount = cartItems.sumOf { it.quantity }
-                    _uiState.value = _uiState.value.copy(cartCount = totalCount)
-                } else {
-                    _uiState.value = _uiState.value.copy(cartCount = 0)
+            networkRepository.getUserAddresses(userId).collect { result ->
+                when {
+                    result.isSuccess -> {
+                        val addresses = result.getOrNull() ?: emptyList()
+                        val username = addresses.firstOrNull()?.username ?: auth.currentUser?.displayName ?: "User"
+                        _uiState.update { it.copy(addresses = addresses, userName = username) }
+                    }
+                    result.isFailure -> {
+                        _uiState.update { it.copy(error = result.exceptionOrNull()?.message) }
+                    }
                 }
             }
         }

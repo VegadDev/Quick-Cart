@@ -44,10 +44,6 @@ constructor(
             navigator.navigate(NavigationCommand.Back)
         }
 
-        override fun onEditProfileClick() {
-            navigator.navigate(NavigationCommand.To(AppScreens.EditProfileScreen.route))
-        }
-
         override fun onAddressesClick() {
             navigator.navigate(NavigationCommand.To(AppScreens.AddressScreen.route))
         }

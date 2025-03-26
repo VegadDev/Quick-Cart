@@ -9,6 +9,7 @@ interface HomeInterActor {
     fun gotoCart()
     suspend fun addToCart(product: Product)
     fun gotoProfile()
+    fun gotoAddAddress()
 
 
 }

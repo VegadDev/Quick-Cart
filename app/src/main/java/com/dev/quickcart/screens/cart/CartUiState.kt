@@ -1,6 +1,7 @@
 package com.dev.quickcart.screens.cart
 
 import com.dev.quickcart.data.model.CartItem
+import com.dev.quickcart.data.model.UserAddress
 
 data class CartUiState(
 
@@ -13,5 +14,7 @@ data class CartUiState(
     var cartCount: Int = 0,
     var cartTotal: Int = 0,
     val totalPrice: Double = 0.0,
+
+    val userAddress: UserAddress? = null,
 
     )

@@ -1,5 +1,6 @@
 package com.dev.quickcart.screens.cart
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.quickcart.data.model.CartItem
@@ -14,25 +15,31 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import kotlin.text.toInt
 
 
 @HiltViewModel
 class CartViewModel
 @Inject
 constructor(
+    savedStateHandle: SavedStateHandle,
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
     private val networkRepository: NetworkRepository,
     private val navigator: Navigator
 ) : ViewModel() {
 
+    val addressId = savedStateHandle.get<String>("json")?.toString()
+        ?: throw IllegalStateException("Address Id is null")
+
     private val _uiState = MutableStateFlow(CartUiState())
     val uiState: StateFlow<CartUiState> = _uiState.asStateFlow()
 
-    private var cartListener: ListenerRegistration? = null
 
     val interActor = object : CartInterActor {
         override fun onBackClick() {
@@ -56,39 +63,21 @@ constructor(
 
     init {
         fetchCartItems1()
-        //startCartListener()
+        loadSelectedAddress(addressId.toString())
     }
 
 
-    private fun startCartListener() {
+
+    fun loadSelectedAddress(selectedCategory: String) {
         viewModelScope.launch {
             val userId = auth.currentUser?.uid ?: return@launch
-            cartListener = firestore.collection("users").document(userId)
-                .collection("cart")
-                .addSnapshotListener { snapshot, e ->
-                    if (e != null) {
-                        _uiState.value = _uiState.value.copy(error = e.message)
-                        return@addSnapshotListener
-                    }
-                    val cartItems = snapshot?.documents?.mapNotNull { doc ->
-                        CartItem(
-                            productId = doc.id,
-                            productName = doc.getString("productName") ?: "",
-                            productPrice = doc.getDouble("productPrice") ?: 0.0,
-                            quantity = doc.getLong("quantity")?.toInt() ?: 1,
-                            productImage = doc.getBlob("productImage"),
-                            productType = doc.getString("productType") ?: "",
-                            productTypeValue = doc.get("productTypeValue")
-                        )
-                    } ?: emptyList()
-
-                    // Calculate total price
-                    val totalPrice = cartItems.sumOf { it.productPrice * it.quantity }
-                    _uiState.value = _uiState.value.copy(cartItems = cartItems, totalPrice = totalPrice)
-                }
+            networkRepository.getUserAddresses(userId).collect { result ->
+                val addresses = result.getOrNull() ?: emptyList()
+                val selectedAddress = addresses.find { it.category == selectedCategory }
+                _uiState.update { it.copy(userAddress = selectedAddress) }
+            }
         }
     }
-
 
 
     fun fetchCartItems1() {

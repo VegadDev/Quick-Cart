@@ -48,6 +48,10 @@ constructor(
 
     val interActor = object : HomeInterActor {
 
+        override fun selectAddressCategory(category: String) {
+            _uiState.update { it.copy(selectedAddressCategory = category) }
+        }
+
 
         override fun updateSearchInput(it: String) {
             _uiState.value = _uiState.value.copy(searchInput = it, searchInputError = "")
@@ -62,8 +66,8 @@ constructor(
 
         }
 
-        override fun gotoCart() {
-            navigator.navigate(NavigationCommand.To(AppScreens.CartScreen.route))
+        override fun gotoCart(string: String) {
+            navigator.navigate(NavigationCommand.To(AppScreens.CartScreen.route, Gson().toJson(string)))
         }
 
         override suspend fun addToCart(product: Product) {

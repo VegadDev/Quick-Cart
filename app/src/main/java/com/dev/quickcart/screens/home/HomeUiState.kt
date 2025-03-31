@@ -1,5 +1,7 @@
 package com.dev.quickcart.screens.home
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.dev.quickcart.data.model.CartItem
 import com.dev.quickcart.data.model.Product
 import com.dev.quickcart.data.model.UserAddress
@@ -12,6 +14,7 @@ data class HomeUiState(
     val productList: List<Product> = emptyList(),
     var isLoading: Boolean = false,
     var isLoadingOnATC: Boolean = false,
+    var showBottomSheet: MutableState<Boolean> = mutableStateOf(false),
     val error: String? = null,
 
 
@@ -26,6 +29,8 @@ data class HomeUiState(
     val isAdding: Boolean = false, // New field for button loading state
     val cartItems: List<CartItem> = emptyList(),
     var addresses: List<UserAddress> = emptyList(),
+
+    val selectedAddressCategory: String? = null,
 
 
     val loadingState: StateFlow<Map<String, Boolean>> = MutableStateFlow(emptyMap()),

@@ -28,6 +28,8 @@ import com.dev.quickcart.screens.profile.ProfileScreen
 import com.dev.quickcart.screens.profile.ProfileViewModel
 import com.dev.quickcart.screens.profile.address_screen.AddressScreen
 import com.dev.quickcart.screens.profile.address_screen.AddressViewModel
+import com.dev.quickcart.screens.profile.orders_screen.OrderScreen
+import com.dev.quickcart.screens.profile.orders_screen.OrdersViewModel
 import com.dev.quickcart.screens.settings.SettingScreen
 import com.dev.quickcart.screens.settings.SettingViewModel
 
@@ -47,6 +49,7 @@ sealed class AppScreens(val route: String) {
     data object AddScreen : AppScreens("AddScreen")
     data object ProductPageScreen : AppScreens("ProductPageScreen")
     data object AddressScreen : AppScreens("AddressScreen")
+    data object OrderScreen : AppScreens("OrderScreen")
 
 }
 
@@ -116,7 +119,11 @@ val screens = listOf(
         val uiState by viewModel.uiState.collectAsState()
         AddressScreen(interActor = viewModel.interActor,uiState)
     },
-
+    Screen(AppScreens.OrderScreen.route) {
+        val viewModel = hiltViewModel<OrdersViewModel>()
+        val uiState by viewModel.uiState.collectAsState()
+        OrderScreen(interActor = viewModel.interActor,uiState)
+    },
 
 
 )

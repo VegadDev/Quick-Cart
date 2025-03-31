@@ -100,6 +100,7 @@ fun CustomIcon(
 @Composable
 fun AddButton(
     modifier: Modifier = Modifier,
+    color: Color = AppTheme.colors.primary,
     onAddClick: () -> Unit = {},
     isLoading: Boolean = false,
 ) {
@@ -114,9 +115,9 @@ fun AddButton(
             ) {
                 CustomCard(
                     isClickable = false,
-                    modifier = Modifier,
+                    modifier = modifier,
                     cardCorner = 40,
-                    cardColor = AppTheme.colors.primary
+                    cardColor = color
                 ) {
                     CustomIcon(
                         icon = R.drawable.ic_add,
@@ -126,21 +127,21 @@ fun AddButton(
                     )
                 }
                 CircularProgressIndicator(
-                    modifier = Modifier.size(40.dp),
+                    modifier = Modifier.size(34.dp),
                     color = AppTheme.colors.titleText
                 )
             }
         } else {
             CustomCard(
                 onClick = { onAddClick() },
-                modifier = Modifier,
+                modifier = modifier,
                 cardCorner = 40,
-                cardColor = AppTheme.colors.primary
+                cardColor = color
             ) {
                 CustomIcon(
                     icon = R.drawable.ic_add,
                     modifier = Modifier.padding(5.dp),
-                    imageModifier = Modifier.size(30.dp),
+                    imageModifier = Modifier.size(32.dp),
                     colorFilter = ColorFilter.tint(AppTheme.colors.titleText)
                 )
             }
@@ -240,13 +241,14 @@ fun MyDropDown(
     onNewAddress: () -> Unit = {},
     title: String = "",
     isicon: Boolean = true,
+    showBottomSheet: Boolean = false,
     corner: Int = 30
 ) {
     // Track currently selected address
     var selectedItem by remember { mutableStateOf(initialItem) }
 
     // Track whether the bottom sheet is visible
-    var showBottomSheet by remember { mutableStateOf(false) }
+    var showBottomSheet by remember { mutableStateOf(showBottomSheet) }
 
     // Bottom sheet state
     val sheetState = rememberModalBottomSheetState(
@@ -416,7 +418,7 @@ fun CustomTextField(
             )
         },
         singleLine = true,
-        isError = error?.isNotEmpty() ?: false,
+        isError = error?.isNotEmpty() == true,
         shape = RoundedCornerShape(cornerShape.dp),
         textStyle = textStyle,
         leadingIcon = leadingIcon,
@@ -464,7 +466,7 @@ fun MyButton(
         )
     ) {
 
-        Row() {
+        Row {
             icon()
             Text(
                 text = text,
@@ -578,7 +580,7 @@ fun SquareBorderProgressIndicator(
             val halfStroke = borderWidthPx / 2f
 
             // Define the path for the rounded rectangle
-            val path = Path().apply {
+            Path().apply {
                 val left = halfStroke
                 val top = halfStroke
                 val right = squareSize - halfStroke

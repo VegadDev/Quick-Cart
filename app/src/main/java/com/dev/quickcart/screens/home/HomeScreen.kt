@@ -1,6 +1,7 @@
 package com.dev.quickcart.screens.home
 
 import android.graphics.BitmapFactory
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -36,6 +38,7 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -63,6 +66,7 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
     val coroutineScope = rememberCoroutineScope()
     val viewModel: HomeViewModel = hiltViewModel()
     val loadingStates = viewModel.loadingStates.collectAsState().value
+
 
     Box(
         modifier = Modifier
@@ -119,13 +123,15 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                     val addressCategories = uiState.addresses.map { it.category }
                     val initialCategory = addressCategories.firstOrNull() ?: "Select Address"
 
+
                     MyDropDown(
                         items = addressCategories,
                         initialItem = initialCategory,
                         onItemSelected = { selected ->
-                            //viewModel.processCheckout(selected)
+                            interActor.selectAddressCategory(selected)
                         },
                         title = "Select Address",
+                        showBottomSheet = uiState.showBottomSheet.value,
                         onNewAddress = { interActor.gotoAddAddress() }
                     )
 
@@ -187,7 +193,7 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                         modifier = Modifier.padding(horizontal = 20.dp),
                     ) {
                         items(uiState.productList) { item ->
-                            val isLoading = loadingStates[item.prodId.toString()] ?: false
+                            val isLoading = loadingStates[item.prodId.toString()] == true
                             ProductCard(
                                 product = item,
                                 onClick = {
@@ -234,7 +240,7 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                         modifier = Modifier.padding(horizontal = 20.dp),
                     ) {
                         items(vegetablesProducts) { item ->
-                            val isLoading = loadingStates[item.prodId.toString()] ?: false
+                            val isLoading = loadingStates[item.prodId.toString()] == true
                             ProductCard(
                                 product = item,
                                 onClick = {
@@ -280,7 +286,7 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                         modifier = Modifier.padding(horizontal = 20.dp),
                     ) {
                         items(fruitsProducts) { item ->
-                            val isLoading = loadingStates[item.prodId.toString()] ?: false
+                            val isLoading = loadingStates[item.prodId.toString()] == true
                             ProductCard(
                                 product = item,
                                 onClick = {
@@ -302,7 +308,7 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
 
 
         }
-
+        val selectedCategory = uiState.selectedAddressCategory
         CustomCard(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -310,7 +316,14 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
             cardColor = AppTheme.colors.primary,
             cardCorner = 17,
             cardElevation = 30,
-            onClick = { interActor.gotoCart() }
+            onClick = {
+                if (selectedCategory != null) {
+                    interActor.gotoCart(selectedCategory)
+                } else {
+                    uiState.copy(showBottomSheet = mutableStateOf(true))
+                    //Toast.makeText(, "Please select an address", Toast.LENGTH_SHORT).show()
+                }
+            }
         ) {
             Row(
                 modifier = Modifier.padding(15.dp),
@@ -382,7 +395,6 @@ fun ProductCard(
                     onClick()
                     delay(2000)
                 }
-
             }
         ) {
             Column(
@@ -397,7 +409,7 @@ fun ProductCard(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(120.dp)
+                        .height(100.dp)
                         .padding(top = 10.dp, bottom = 10.dp),
                     horizontalArrangement = Arrangement.Center,
                 ) {
@@ -416,33 +428,50 @@ fun ProductCard(
                     }
                 }
 
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = displayQuantity(product),
+                        style = AppTheme.textStyles.regular.regular,
+                        color = AppTheme.colors.textColorLight,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
 
-
-                Row {
-                    Column {
-                        Text(
-                            "₹ ${product.prodPrice}",
-                            style = AppTheme.textStyles.bold.large,
-                            color = AppTheme.colors.primary
-                        )
-                        Text(
-                            text = displayQuantity(product),
-                            style = AppTheme.textStyles.regular.regular,
-                            color = AppTheme.colors.textColorLight
-                        )
-                    }
-                    Spacer(Modifier.weight(1f))
-                    AddButton(
-                        modifier = Modifier.padding(start = 10.dp),
-                        isLoading = isLoading,
-                        onAddClick = {
+                    CustomCard(
+                        cardColor = AppTheme.colors.primary,
+                        modifier = Modifier,
+                        cardCorner = 30,
+                        onClick = {
                             coroutineScope.launch {
                                 addToCard()
                             }
                         }
-                    )
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(7.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            AddButton(
+                                modifier = Modifier.size(34.dp),
+                                color = AppTheme.colors.cardBackgroundColor,
+                                isLoading = isLoading,
+                                onAddClick = {
+                                    coroutineScope.launch {
+                                        addToCard()
+                                    }
+                                }
+                            )
+                            Text(
+                                "₹ ${product.prodPrice}",
+                                style = AppTheme.textStyles.bold.large,
+                                color = AppTheme.colors.onPrimary,
+                                modifier = Modifier.padding(horizontal = 10.dp)
+                            )
+                        }
+                    }
                 }
-
 
             }
 

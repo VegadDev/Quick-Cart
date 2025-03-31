@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -65,7 +66,7 @@ fun CartScreen(interActor: CartInterActor, uiState: CartUiState) {
 
                 Text(
                     "My Cart 🛒",
-                    style = AppTheme.textStyles.bold.largeTitle,
+                    style = AppTheme.textStyles.bold.large,
                     color = AppTheme.colors.titleText,
                     modifier = Modifier.padding(top = 15.dp)
                 )
@@ -132,6 +133,25 @@ fun CartScreen(interActor: CartInterActor, uiState: CartUiState) {
                         modifier = Modifier.padding(top = 20.dp)
                     )
 
+                    uiState.userAddress?.let { address ->
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = "Selected Address: ${address.category}",
+                                )
+                                Text("Phone: ${address.phoneNumber}")
+
+                                address.landmark?.let {
+                                    Text("Landmark: $it")
+                                }
+                            }
+                        }
+                    } ?: Text("No address selected")
+
+                    // Add other cart content here (e.g., cart items, total)
+                    Text("Cart Items")
                     LazyColumn(
                         modifier = Modifier.padding(top = 10.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -141,8 +161,8 @@ fun CartScreen(interActor: CartInterActor, uiState: CartUiState) {
                             items = uiState.cartItems,
                             key = { item -> item.productId }
                         ) { item ->
-                            val isLoadingMinus = uiState.loadingItemsMinus[item.productId] ?: false
-                            val isLoadingPlus = uiState.loadingItemsPlus[item.productId] ?: false
+                            val isLoadingMinus = uiState.loadingItemsMinus[item.productId] == true
+                            val isLoadingPlus = uiState.loadingItemsPlus[item.productId] == true
                             CartItemCard(
                                 cartItem = item,
                                 isLoadingMinus = isLoadingMinus,

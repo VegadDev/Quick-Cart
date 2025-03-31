@@ -46,7 +46,7 @@ fun GetProfileScreen(interActor: GetProfileInterActor , uiState: GetProfileUiSta
 
     val categoryOptions = listOf("Home", "Work", "Flat", "Other")
     val selectedCategory = remember { mutableStateOf(uiState.category) }
-    val screenWidthDp = LocalConfiguration.current.screenWidthDp
+    LocalConfiguration.current.screenWidthDp
 
 
     Column(

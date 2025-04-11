@@ -4,7 +4,8 @@ package com.dev.quickcart.data.model
 
 data class User(
 
-    val username: String,
-    val phoneNumber: String,
+    val userId: String,
+    val username: String?,
+    val profileImage: String?,
 
 )

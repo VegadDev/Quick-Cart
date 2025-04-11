@@ -1,10 +1,13 @@
 package com.dev.quickcart.screens.cart
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.quickcart.data.model.CartItem
+import com.dev.quickcart.data.model.Order
 import com.dev.quickcart.data.repository.NetworkRepository
+import com.dev.quickcart.navigation.AppScreens
 import com.dev.quickcart.navigation.NavigationCommand
 import com.dev.quickcart.navigation.Navigator
 import com.google.firebase.auth.FirebaseAuth
@@ -15,6 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -58,29 +62,58 @@ constructor(
             removeProduct(productId)
         }
 
+        override fun proceedToCheckout() {
+            proceedToCheckout1()
+        }
+
     }
 
 
     init {
-        fetchCartItems1()
-        loadSelectedAddress(addressId.toString())
+        fetchCartItems()
     }
 
-
-
-    fun loadSelectedAddress(selectedCategory: String) {
+    fun proceedToCheckout1() {
         viewModelScope.launch {
             val userId = auth.currentUser?.uid ?: return@launch
-            networkRepository.getUserAddresses(userId).collect { result ->
-                val addresses = result.getOrNull() ?: emptyList()
-                val selectedAddress = addresses.find { it.category == selectedCategory }
-                _uiState.update { it.copy(userAddress = selectedAddress) }
+            val cartItems = _uiState.value.cartItems
+            val selectedAddress = _uiState.value.selectedAddress
+            val totalPrice = _uiState.value.totalPrice
+
+            if (selectedAddress == null) {
+                _uiState.value = _uiState.value.copy(error = "Address select karo pehle!")
+                return@launch
+            }
+            if (cartItems.isEmpty()) {
+                _uiState.value = _uiState.value.copy(error = "Cart khali hai!")
+                return@launch
+            }
+
+            val order = Order(
+                userId = userId,
+                address = selectedAddress,
+                cartItems = cartItems,
+                totalPrice = totalPrice
+            )
+
+            val orderResult = networkRepository.placeOrder(order)
+            if (orderResult.isSuccess) {
+                val clearResult = networkRepository.clearCart(userId)
+                if (clearResult.isSuccess) {
+                    _uiState.value = CartUiState() // Reset UI state
+                    navigator.navigate(NavigationCommand.ToAndClearAll(AppScreens.HomeScreen.route))
+                } else {
+                    _uiState.value = _uiState.value.copy(error = "Cart clear nahi hua!")
+                }
+            } else {
+                _uiState.value = _uiState.value.copy(error = "Order place nahi hua!")
             }
         }
     }
 
 
-    fun fetchCartItems1() {
+
+    fun fetchCartItems() {
         viewModelScope.launch {
             val userId = auth.currentUser?.uid
             if (userId == null) {
@@ -93,28 +126,34 @@ constructor(
             }
 
             _uiState.value = CartUiState(isLoading = true)
-            networkRepository.getCartItems(userId).collect { result ->
-                if (result.isSuccess) {
-                    val cartItems = result.getOrNull() ?: emptyList()
-                    val totalCount = cartItems.sumOf { it.quantity }
-                    val totalPrice = cartItems.sumOf { it.productPrice * it.quantity }
-                    _uiState.value = CartUiState(
-                        cartItems = cartItems,
-                        cartCount = totalCount,
-                        totalPrice = totalPrice,
-                        isLoading = false
-                    )
-                } else {
-                    _uiState.value = CartUiState(
-                        error = result.exceptionOrNull()?.message,
-                        cartCount = 0,
-                        totalPrice = 0.0,
-                        isLoading = false
-                    )
-                }
+            combine(
+                networkRepository.getCartItems(userId),
+                networkRepository.getUserAddresses(userId)
+            ) { cartResult, addressResult ->
+                val cartItems = if (cartResult.isSuccess) cartResult.getOrNull() ?: emptyList() else emptyList()
+                val addresses = if (addressResult.isSuccess) addressResult.getOrNull() ?: emptyList() else emptyList()
+
+                val totalCount = cartItems.sumOf { it.quantity }
+                val totalPrice = cartItems.sumOf { it.productPrice * it.quantity }
+                val selectedCategory = networkRepository.getSelectedAddress().value
+                val selectedAddress = if (selectedCategory != null) {
+                    addresses.find { it.category == selectedCategory }
+                } else null
+
+                CartUiState(
+                    cartItems = cartItems,
+                    selectedAddress = selectedAddress,
+                    cartCount = totalCount,
+                    totalPrice = totalPrice,
+                    isLoading = false,
+                    error = if (cartResult.isFailure) cartResult.exceptionOrNull()?.message else null
+                )
+            }.collect { newState ->
+                _uiState.value = newState
             }
         }
     }
+
 
     fun incrementQuantity(productId: String) {
         viewModelScope.launch {

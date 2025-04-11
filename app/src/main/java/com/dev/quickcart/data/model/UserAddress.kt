@@ -1,5 +1,7 @@
 package com.dev.quickcart.data.model
 
+
+
 data class UserAddress(
 
     val username: String = "",
@@ -7,6 +9,6 @@ data class UserAddress(
     val houseAddress: String = "",
     val areaAddress: String = "",
     val landmark: String? = null,
-    val category: String = "Home"
+    val category: String = "",
 
-)
+    )

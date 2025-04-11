@@ -19,6 +19,7 @@ import com.dev.quickcart.screens.common.CustomTextField
 import com.dev.quickcart.screens.common.ImagePicker
 import com.dev.quickcart.screens.common.MyButton
 import com.dev.quickcart.screens.common.MyDropDown
+import com.dev.quickcart.screens.common.MyDropDown1
 import com.dev.quickcart.ui.theme.AppTheme
 
 @Composable
@@ -111,11 +112,10 @@ fun AddProductScreen(interActor: AddProductInterActor, uiState: AddProductUiStat
                 color = AppTheme.colors.titleText
             )
             Spacer(Modifier.size(10.dp))
-            MyDropDown(
+            MyDropDown1(
                 items = listOf("Fruits", "Vegetable"),
                 onItemSelected = { interActor.updateProdCategory(it)},
                 title = "Select Category",
-                isicon = false,
                 corner = 15,
             )
 
@@ -127,11 +127,10 @@ fun AddProductScreen(interActor: AddProductInterActor, uiState: AddProductUiStat
                 color = AppTheme.colors.titleText
             )
             Spacer(Modifier.size(10.dp))
-            MyDropDown(
+            MyDropDown1(
                 items = listOf("counted", "weighed"),
                 onItemSelected = { interActor.updateProdType(it) },
                 title = "Select Product Type",
-                isicon = false,
                 corner = 15,
             )
 

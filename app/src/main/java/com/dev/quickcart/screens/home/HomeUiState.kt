@@ -28,8 +28,8 @@ data class HomeUiState(
 
     val isAdding: Boolean = false, // New field for button loading state
     val cartItems: List<CartItem> = emptyList(),
-    var addresses: List<UserAddress> = emptyList(),
 
+    var addresses: List<UserAddress> = emptyList(),
     val selectedAddressCategory: String? = null,
 
 

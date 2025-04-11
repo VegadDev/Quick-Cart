@@ -8,6 +8,7 @@ interface ProfileInterActor {
 
     fun onLogoutClick()
 
+    fun onOrdersClick()
 
 }
 

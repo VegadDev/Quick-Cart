@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.dev.quickcart.data.model.CartItem
+import com.dev.quickcart.data.model.Order
 
 import com.dev.quickcart.data.model.Product
 import com.dev.quickcart.data.model.UserAddress
@@ -14,6 +15,9 @@ import com.google.firebase.firestore.ListenerRegistration
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.tasks.await
@@ -27,8 +31,6 @@ interface NetworkRepository {
 
     suspend fun getProducts(productId: String): Product?
 
-    fun getUserAddresses(userId: String): Flow<Result<List<UserAddress>>>
-
     suspend fun addOrUpdateCartItem(userId: String, cartItem: CartItem): Result<Unit>
 
     suspend fun getCartItems(userId: String): Flow<Result<List<CartItem>>>
@@ -36,6 +38,14 @@ interface NetworkRepository {
     suspend fun updateCartItemQuantity(userId: String, productId: String, newQuantity: Int): Result<Unit>
 
     fun listenToCartItems(userId: String, onUpdate: (List<CartItem>) -> Unit): ListenerRegistration
+
+    fun getUserAddresses(userId: String): Flow<Result<List<UserAddress>>>
+
+    fun setSelectedAddress(category: String)
+    fun getSelectedAddress(): StateFlow<String?>
+
+    suspend fun placeOrder(order: Order): Result<Unit>
+    suspend fun clearCart(userId: String): Result<Unit>
 
 }
 
@@ -106,44 +116,6 @@ constructor(
         }
     }
 
-    override fun getUserAddresses(userId: String): Flow<Result<List<UserAddress>>> = callbackFlow {
-        // Ensure userId is valid
-        if (userId.isBlank()) {
-            trySend(Result.failure(IllegalArgumentException("User ID cannot be blank")))
-            close()
-            return@callbackFlow
-        }
-
-        val addressesRef = firestore.collection("users")
-            .document(userId)
-            .collection("addresses")
-
-        // Real-time listener
-        val listener = addressesRef.addSnapshotListener { snapshot, error ->
-            if (error != null) {
-                trySend(Result.failure(error))
-                return@addSnapshotListener
-            }
-
-            if (snapshot != null) {
-                val addresses = snapshot.documents.mapNotNull { doc ->
-                    try {
-                        doc.toObject(UserAddress::class.java)?.copy(category = doc.id)
-                    } catch (e: Exception) {
-                        null // Skip malformed documents
-                    }
-                }
-                trySend(Result.success(addresses))
-            } else {
-                trySend(Result.success(emptyList())) // No data found
-            }
-        }
-
-        // Cleanup listener when Flow is cancelled
-        awaitClose { listener.remove() }
-    }.catch { e ->
-        emit(Result.failure(e)) // Handle any upstream errors
-    }
 
     override suspend fun addOrUpdateCartItem(userId: String, cartItem: CartItem): Result<Unit> {
         return try {
@@ -219,6 +191,66 @@ constructor(
         }
     }
 
+
+    private val _selectedAddress = MutableStateFlow<String?>(null)
+
+    override fun getUserAddresses(userId: String): Flow<Result<List<UserAddress>>> = callbackFlow {
+        if (userId.isBlank()) {
+            trySend(Result.failure(IllegalArgumentException("User ID cannot be blank")))
+            close()
+            return@callbackFlow
+        }
+
+        val addressesRef = firestore.collection("users").document(userId).collection("addresses")
+        val listener = addressesRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                trySend(Result.failure(error))
+                return@addSnapshotListener
+            }
+            val addresses = snapshot?.documents?.mapNotNull { doc ->
+                doc.toObject(UserAddress::class.java)?.copy(category = doc.id)
+            } ?: emptyList()
+            Log.d("NetworkRepository", "Fetched addresses: $addresses")
+            trySend(Result.success(addresses))
+        }
+        awaitClose { listener.remove() }
+    }
+
+    override fun setSelectedAddress(category: String) {
+        _selectedAddress.value = category
+    }
+
+    override fun getSelectedAddress(): StateFlow<String?> = _selectedAddress.asStateFlow()
+
+
+    override suspend fun placeOrder(order: Order): Result<Unit> {
+        return try {
+            // Order ko users/{userId}/orders mein save karo
+            firestore.collection("users")
+                .document(order.userId)
+                .collection("orders")
+                .add(order)
+                .await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun clearCart(userId: String): Result<Unit> {
+        return try {
+            val cartRef = firestore.collection("users").document(userId).collection("cart")
+            val snapshot = cartRef.get().await()
+            val batch = firestore.batch()
+            snapshot.documents.forEach { doc ->
+                batch.delete(doc.reference)
+            }
+            batch.commit().await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
 
 

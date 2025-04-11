@@ -40,6 +40,10 @@ constructor(
             logout()
         }
 
+        override fun onOrdersClick() {
+            navigator.navigate(NavigationCommand.To(AppScreens.OrderScreen.route))
+        }
+
         override fun onBackClick() {
             navigator.navigate(NavigationCommand.Back)
         }

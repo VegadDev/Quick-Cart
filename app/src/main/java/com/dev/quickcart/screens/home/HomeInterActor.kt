@@ -12,6 +12,7 @@ interface HomeInterActor {
     fun gotoAddAddress()
     fun selectAddressCategory(category: String)
 
+    fun setSelectedAddress(address: String)
 
 }
 

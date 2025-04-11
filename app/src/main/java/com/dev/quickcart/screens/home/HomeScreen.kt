@@ -1,6 +1,7 @@
 package com.dev.quickcart.screens.home
 
 import android.graphics.BitmapFactory
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -58,6 +59,7 @@ import com.dev.quickcart.ui.theme.AppTheme
 import com.dev.quickcart.utils.displayQuantity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.getValue
 
 @Composable
 fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
@@ -67,6 +69,13 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
     val viewModel: HomeViewModel = hiltViewModel()
     val loadingStates = viewModel.loadingStates.collectAsState().value
 
+    val context = LocalContext.current
+
+    val addressCategories = uiState.addresses.map { it.category }
+    val initialCategory = addressCategories.firstOrNull() ?: "No Address"
+    val selectedAddress by viewModel.networkRepository.getSelectedAddress().collectAsState()
+
+    val shouldShowBottomSheet = selectedAddress == "" && uiState.addresses.isNotEmpty()
 
     Box(
         modifier = Modifier
@@ -120,18 +129,17 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
 
                     Spacer(Modifier.weight(1f))
 
-                    val addressCategories = uiState.addresses.map { it.category }
-                    val initialCategory = addressCategories.firstOrNull() ?: "Select Address"
-
 
                     MyDropDown(
-                        items = addressCategories,
-                        initialItem = initialCategory,
+                        items = uiState.addresses,
+                        initialItem = selectedAddress ?: "",
                         onItemSelected = { selected ->
-                            interActor.selectAddressCategory(selected)
+                            val cleanSelected = selected.trim()
+                            Log.d("HomeScreen", "Selected Address: '$cleanSelected'")
+                            interActor.setSelectedAddress(cleanSelected)
                         },
                         title = "Select Address",
-                        showBottomSheet = uiState.showBottomSheet.value,
+                        showBottomSheet = shouldShowBottomSheet,
                         onNewAddress = { interActor.gotoAddAddress() }
                     )
 
@@ -308,7 +316,7 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
 
 
         }
-        val selectedCategory = uiState.selectedAddressCategory
+        val selectedCategory = uiState.selectedAddressCategory ?: initialCategory
         CustomCard(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -318,10 +326,13 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
             cardElevation = 30,
             onClick = {
                 if (selectedCategory != null) {
-                    interActor.gotoCart(selectedCategory)
+                    val cleanSelected = selectedCategory.trim()
+                    Log.d("HomeScreen", "Navigating to Cart with: '$cleanSelected'")
+                    interActor.gotoCart(cleanSelected)
+                    Log.d("HomeScreen", "Navigating to Cart with: $selectedCategory")
                 } else {
                     uiState.copy(showBottomSheet = mutableStateOf(true))
-                    //Toast.makeText(, "Please select an address", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Please select an address", Toast.LENGTH_SHORT).show()
                 }
             }
         ) {
@@ -364,6 +375,7 @@ fun ProductCard(
 ) {
 
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     if (product.prodImage == null) {
         NewCard(
@@ -447,6 +459,7 @@ fun ProductCard(
                             coroutineScope.launch {
                                 addToCard()
                             }
+                            Toast.makeText(context, "Added To Cart", Toast.LENGTH_SHORT).show()
                         }
                     ) {
                         Row(
@@ -461,6 +474,7 @@ fun ProductCard(
                                     coroutineScope.launch {
                                         addToCard()
                                     }
+                                    Toast.makeText(context, "Added To Cart", Toast.LENGTH_SHORT).show()
                                 }
                             )
                             Text(

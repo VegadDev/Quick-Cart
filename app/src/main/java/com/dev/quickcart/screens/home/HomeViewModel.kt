@@ -30,8 +30,7 @@ class HomeViewModel
 @Inject
 constructor(
     private val navigator: Navigator,
-    private val networkRepository: NetworkRepository,
-    private val firestore: FirebaseFirestore,
+    internal val networkRepository: NetworkRepository,
     private val auth: FirebaseAuth,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
@@ -43,6 +42,9 @@ constructor(
     private val _loadingStates = MutableStateFlow<Map<String, Boolean>>(emptyMap())
     val loadingStates: StateFlow<Map<String, Boolean>> = _loadingStates.asStateFlow()
 
+    private val _selectedAddress = MutableStateFlow<String?>(null)
+    val selectedAddress: StateFlow<String?> = _selectedAddress.asStateFlow()
+
     private var cartListener: ListenerRegistration? = null
 
 
@@ -50,6 +52,10 @@ constructor(
 
         override fun selectAddressCategory(category: String) {
             _uiState.update { it.copy(selectedAddressCategory = category) }
+        }
+
+        override fun setSelectedAddress(address: String) {
+            networkRepository.setSelectedAddress(address)
         }
 
 
@@ -67,7 +73,7 @@ constructor(
         }
 
         override fun gotoCart(string: String) {
-            navigator.navigate(NavigationCommand.To(AppScreens.CartScreen.route, Gson().toJson(string)))
+            navigator.navigate(NavigationCommand.To(AppScreens.CartScreen.route))
         }
 
         override suspend fun addToCart(product: Product) {

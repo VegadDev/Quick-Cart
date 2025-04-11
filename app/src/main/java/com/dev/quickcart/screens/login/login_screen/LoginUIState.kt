@@ -7,6 +7,9 @@ data class LoginUiState(
 
     val isLoading: Boolean = false,
     val userEmail: String? = null,
-    val error: String? = null
+    val error: String? = null,
+
+    val isSignInSuccess: Boolean = false,
+    val signInError: String? = null,
 
 )

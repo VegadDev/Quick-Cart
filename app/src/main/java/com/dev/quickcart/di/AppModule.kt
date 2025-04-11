@@ -54,6 +54,7 @@ object AppModule {
         return GoogleSignIn.getClient(context, gso)
     }
 
+
     @Singleton
     @Provides
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()

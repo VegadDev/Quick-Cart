@@ -150,7 +150,7 @@ fun ProfileScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 30.dp, start = 15.dp, end = 15.dp)
-                            .clickable{  },
+                            .clickable{ interActor.onOrdersClick() },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         CustomIcon(
@@ -249,103 +249,6 @@ fun ProfileScreen(
                     }
 
                     Spacer(Modifier.weight(1f))
-
-
-                    val isSelected by remember { mutableStateOf(false) }
-                    Text(
-                        "Appearance",
-                        style = AppTheme.textStyles.regular.large,
-                        color = AppTheme.colors.titleText,
-                        modifier = Modifier.padding(bottom = 10.dp)
-                    )
-                    Row {
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            CustomCard(
-                                cardColor = if (isSelected) AppTheme.colors.background else AppTheme.colors.cardBackgroundColor,
-                                modifier = Modifier.height(60.dp).width(130.dp).padding(end = 10.dp),
-                                border = if (isSelected) BorderStroke(2.dp , AppTheme.colors.lightGray) else BorderStroke(1.dp , AppTheme.colors.textColorLight)
-                            ) {
-                                Column(
-                                    modifier = Modifier.fillMaxSize(),
-                                    verticalArrangement = Arrangement.Center,
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    CustomIcon(
-                                        icon = R.drawable.ic_system,
-                                        modifier = Modifier,
-                                        imageModifier = Modifier.size(35.dp),
-                                        isCircle = false,
-                                        colorFilter = if (isSystemInDarkTheme()) ColorFilter.tint(AppTheme.colors.onPrimary) else null
-                                    )
-                                }
-                            }
-                            Text("System",
-                                style = AppTheme.textStyles.regular.regular,
-                                color = AppTheme.colors.titleText,
-                                modifier = Modifier.padding(top = 5.dp , start = 35.dp),
-                            )
-                        }
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            CustomCard(
-                                cardColor = if (isSelected) AppTheme.colors.onBackground else AppTheme.colors.cardBackgroundColor,
-                                modifier = Modifier.height(60.dp).width(130.dp).padding(end = 10.dp),
-                                border = if (isSelected) BorderStroke(2.dp , AppTheme.colors.lightGray) else BorderStroke(1.dp , AppTheme.colors.textColorLight)
-                            ) {
-                                Column(
-                                    modifier = Modifier.fillMaxSize(),
-                                    verticalArrangement = Arrangement.Center,
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    CustomIcon(
-                                        icon = R.drawable.ic_darkmode,
-                                        modifier = Modifier,
-                                        imageModifier = Modifier.size(35.dp),
-                                        isCircle = false,
-                                        colorFilter = if (isSystemInDarkTheme()) ColorFilter.tint(AppTheme.colors.onPrimary) else null
-                                    )
-                                }
-                            }
-                            Text("Dark",
-                                style = AppTheme.textStyles.regular.regular,
-                                color = AppTheme.colors.titleText,
-                                modifier = Modifier.padding(top = 5.dp , start = 44.dp),
-                            )
-                        }
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            CustomCard(
-                                cardColor = if (isSelected) AppTheme.colors.background else AppTheme.colors.cardBackgroundColor,
-                                modifier = Modifier.height(60.dp).width(130.dp),
-                                border = if (isSelected) BorderStroke(2.dp , AppTheme.colors.lightGray) else BorderStroke(1.dp , AppTheme.colors.textColorLight)
-                            ) {
-                                Column(
-                                    modifier = Modifier.fillMaxSize(),
-                                    verticalArrangement = Arrangement.Center,
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    CustomIcon(
-                                        icon = R.drawable.ic_lightmode,
-                                        modifier = Modifier,
-                                        imageModifier = Modifier.size(35.dp),
-                                        isCircle = false,
-                                        colorFilter = if (isSystemInDarkTheme()) ColorFilter.tint(AppTheme.colors.onPrimary) else null
-                                    )
-                                }
-                            }
-                            Text("Light",
-                                style = AppTheme.textStyles.regular.regular,
-                                color = AppTheme.colors.titleText,
-                                modifier = Modifier.padding(top = 5.dp , start = 48.dp),
-                            )
-                        }
-
-                    }
-
 
                 }
             }

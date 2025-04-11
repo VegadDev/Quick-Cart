@@ -133,25 +133,16 @@ fun CartScreen(interActor: CartInterActor, uiState: CartUiState) {
                         modifier = Modifier.padding(top = 20.dp)
                     )
 
-                    uiState.userAddress?.let { address ->
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
+                    uiState.selectedAddress?.let { address ->
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
-                                    text = "Selected Address: ${address.category}",
+                                    text = "Shipped to: ${address.category}",
                                 )
                                 Text("Phone: ${address.phoneNumber}")
 
-                                address.landmark?.let {
-                                    Text("Landmark: $it")
-                                }
                             }
-                        }
                     } ?: Text("No address selected")
 
-                    // Add other cart content here (e.g., cart items, total)
-                    Text("Cart Items")
                     LazyColumn(
                         modifier = Modifier.padding(top = 10.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -223,7 +214,8 @@ fun CartScreen(interActor: CartInterActor, uiState: CartUiState) {
                         "Check Out",
                         modifier = Modifier
                             .fillMaxWidth(0.9f)
-                            .padding(bottom = 15.dp)
+                            .padding(bottom = 15.dp),
+                        onClick = { interActor.proceedToCheckout() }
                     )
                 }
             }

@@ -7,12 +7,25 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:40790203605:android:9f4c4050b8905148b4565c",
+        "mobilesdk_app_id": "1:40790203605:android:67c327f73beef9fab4565c",
         "android_client_info": {
           "package_name": "com.dev.quickcart"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "40790203605-kop07mso8580vkk36cql3ceuugfdfs9b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dev.quickcart",
+            "certificate_hash": "b6b6cdc236bcd38a62e1f1dd57138e7c29fca14a"
+          }
+        },
+        {
+          "client_id": "40790203605-b2dra13jis4sri5fth1m5gna9bj57guo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCHGgt_7gQuubNIXAr7irjpBZbIy0yk-Ms"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "40790203605-b2dra13jis4sri5fth1m5gna9bj57guo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

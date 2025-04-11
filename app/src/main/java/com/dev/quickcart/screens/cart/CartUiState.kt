@@ -15,6 +15,6 @@ data class CartUiState(
     var cartTotal: Int = 0,
     val totalPrice: Double = 0.0,
 
-    val userAddress: UserAddress? = null,
+    val selectedAddress: UserAddress? = null,
 
     )

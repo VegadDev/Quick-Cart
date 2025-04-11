@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.dev.quickcart.R
+import com.dev.quickcart.data.model.UserAddress
 import com.dev.quickcart.ui.theme.AppTheme
 import kotlinx.coroutines.*
 
@@ -231,34 +232,31 @@ fun NewCard(
 }
 
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyDropDown(
+fun MyDropDown1(
     modifier: Modifier = Modifier,
     items: List<String>,
-    initialItem: String = items.firstOrNull() ?: "No Address",
+    initialItem: String = "",
     onItemSelected: (String) -> Unit = {},
     onNewAddress: () -> Unit = {},
     title: String = "",
-    isicon: Boolean = true,
+    isIcon: Boolean = true,
     showBottomSheet: Boolean = false,
     corner: Int = 30
 ) {
-    // Track currently selected address
+    // State for the bottom sheet visibility
+    var isBottomSheetVisible by remember { mutableStateOf(showBottomSheet) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    // State for the selected item, initialized with initialItem
     var selectedItem by remember { mutableStateOf(initialItem) }
 
-    // Track whether the bottom sheet is visible
-    var showBottomSheet by remember { mutableStateOf(showBottomSheet) }
-
-    // Bottom sheet state
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true // If you want partial expand, set this to false
-    )
-
-    // ModalBottomSheet for showing list of addresses
-    if (showBottomSheet) {
+    // ModalBottomSheet for showing list of addresses (Your design)
+    if (isBottomSheetVisible) {
         ModalBottomSheet(
-            onDismissRequest = { showBottomSheet = false },
+            onDismissRequest = { isBottomSheetVisible = false },
             sheetState = sheetState
         ) {
             Column(
@@ -269,43 +267,49 @@ fun MyDropDown(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
                         text = title,
                         style = AppTheme.textStyles.bold.largeTitle,
-                        modifier = Modifier
-                            .padding(bottom = 8.dp),
+                        modifier = Modifier.padding(8.dp)
                     )
                     Spacer(Modifier.weight(1f))
-                    if (title.equals("Select Address")) {
+                    if (title.equals("Select Address", ignoreCase = true)) {
                         Text(
                             text = "+ Add new address",
                             style = AppTheme.textStyles.regular.regular,
                             color = AppTheme.colors.primary,
-                            modifier = Modifier.clickable { onNewAddress() },
+                            modifier = Modifier.clickable {
+                                onNewAddress()
+                                isBottomSheetVisible = false // Optionally close sheet
+                            }
                         )
-                    } else null
+                    }
                 }
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
                     contentPadding = PaddingValues(8.dp),
                     verticalArrangement = Arrangement.spacedBy(7.dp)
                 ) {
-                    this.items(items.chunked(2)) { rowItems ->  // Group into pairs
+                    items(items.chunked(2)) { rowItems ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             rowItems.forEach { item ->
+                                val cleanItem = item.trim() // Ensure no whitespace
                                 CustomCard(
-                                    border = if (selectedItem == item) BorderStroke(
+                                    border = if (selectedItem == cleanItem) BorderStroke(
                                         1.dp,
                                         AppTheme.colors.primary
                                     ) else null,
                                     onClick = {
-                                        selectedItem = item
-                                        onItemSelected(item)
+                                        selectedItem = cleanItem
+                                        Log.d("MyDropDown", "Selected clean item: '$cleanItem'")
+                                        onItemSelected(cleanItem) // Pass clean string
+                                        isBottomSheetVisible = false // Close sheet on selection
                                     },
                                     modifier = Modifier
                                         .weight(1f)
@@ -313,39 +317,36 @@ fun MyDropDown(
                                     cardCorner = 14
                                 ) {
                                     Text(
-                                        item,
+                                        text = cleanItem,
                                         style = AppTheme.textStyles.bold.large,
-                                        color = if (selectedItem == item) AppTheme.colors.primary else AppTheme.colors.titleText,
-                                        modifier = Modifier.padding(
-                                            horizontal = 15.dp,
-                                            vertical = 10.dp
-                                        )
+                                        color = if (selectedItem == cleanItem) AppTheme.colors.primary else AppTheme.colors.titleText,
+                                        modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp)
                                     )
                                 }
                             }
                             if (rowItems.size < 2) {
-                                Spacer(modifier = Modifier.weight(1f)) // Maintain layout if odd items
+                                Spacer(modifier = Modifier.weight(1f))
                             }
                         }
                     }
                 }
                 Spacer(Modifier.size(15.dp))
                 MyButton(
-                    "Confirm",
-                    onClick = { showBottomSheet = false },
+                    text = "Confirm",
+                    onClick = { isBottomSheetVisible = false },
                     modifier = Modifier.fillMaxWidth(0.8f)
                 )
-
             }
         }
     }
 
+    // Dropdown trigger card (Your design)
     NewCard(
         cardWidth = 140,
         cardHeight = 55,
         cardCorner = corner,
         cardColor = AppTheme.colors.cardBackgroundColor,
-        onClick = { showBottomSheet = true },
+        onClick = { isBottomSheetVisible = true },
         modifier = modifier
     ) {
         Row(
@@ -354,18 +355,17 @@ fun MyDropDown(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (isicon) {
+            if (isIcon) {
                 CustomIcon(
                     icon = R.drawable.ic_location,
                     modifier = Modifier.padding(2.dp),
                     imageModifier = Modifier.size(30.dp),
                     colorFilter = ColorFilter.tint(AppTheme.colors.primary)
                 )
-
-            } else null
+            }
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = selectedItem,
+                text = if (selectedItem.isEmpty()) "Select Address" else selectedItem,
                 style = AppTheme.textStyles.bold.regular,
                 color = AppTheme.colors.titleText
             )
@@ -376,7 +376,146 @@ fun MyDropDown(
             )
         }
     }
+}
 
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyDropDown(
+    modifier: Modifier = Modifier,
+    items: List<UserAddress>,
+    initialItem: String = "",
+    onItemSelected: (String) -> Unit = {},
+    onNewAddress: () -> Unit = {},
+    title: String = "",
+    isIcon: Boolean = true,
+    showBottomSheet: Boolean = false, // Controlled by HomeScreen
+    corner: Int = 30
+) {
+    // State for bottom sheet visibility, initialized with showBottomSheet
+    var isBottomSheetVisible by remember { mutableStateOf(showBottomSheet) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    // State for the selected item
+    var selectedItem by remember { mutableStateOf(initialItem) }
+
+    // ModalBottomSheet for showing list of addresses
+    if (isBottomSheetVisible) {
+        ModalBottomSheet(
+            onDismissRequest = { isBottomSheetVisible = false },
+            sheetState = sheetState
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = title,
+                        style = AppTheme.textStyles.bold.largeTitle,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    Spacer(Modifier.weight(1f))
+                    if (title.equals("Select Address", ignoreCase = true)) {
+                        Text(
+                            text = "+ Add new address",
+                            style = AppTheme.textStyles.regular.regular,
+                            color = AppTheme.colors.primary,
+                            modifier = Modifier.clickable {
+                                onNewAddress()
+                                isBottomSheetVisible = false
+                            }
+                        )
+                    }
+                }
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(7.dp)
+                ) {
+                    items(items) { address ->
+                        val cleanCategory = address.category.trim()
+                        CustomCard(
+                            border = if (selectedItem == cleanCategory) BorderStroke(
+                                1.dp,
+                                AppTheme.colors.primary
+                            ) else null,
+                            onClick = {
+                                selectedItem = cleanCategory
+                                Log.d("MyDropDown", "Selected category: '$cleanCategory'")
+                                onItemSelected(cleanCategory)
+                                isBottomSheetVisible = false
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(6.dp),
+                            cardCorner = 14
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(15.dp)
+                            ) {
+                                Text(
+                                    text = cleanCategory,
+                                    style = AppTheme.textStyles.bold.large,
+                                    color = if (selectedItem == cleanCategory) AppTheme.colors.primary else AppTheme.colors.titleText
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "${address.houseAddress}, ${address.areaAddress}",
+                                    style = AppTheme.textStyles.regular.regular,
+                                    color = AppTheme.colors.titleText
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    NewCard(
+        cardWidth = 140,
+        cardHeight = 55,
+        cardCorner = corner,
+        cardColor = AppTheme.colors.cardBackgroundColor,
+        onClick = { isBottomSheetVisible = true },
+        modifier = modifier
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(7.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (isIcon) {
+                CustomIcon(
+                    icon = R.drawable.ic_location,
+                    modifier = Modifier.padding(2.dp),
+                    imageModifier = Modifier.size(30.dp),
+                    colorFilter = ColorFilter.tint(AppTheme.colors.primary)
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = if (selectedItem.isEmpty()) "Select Address" else selectedItem,
+                style = AppTheme.textStyles.bold.regular,
+                color = AppTheme.colors.titleText
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = null
+            )
+        }
+    }
 }
 
 

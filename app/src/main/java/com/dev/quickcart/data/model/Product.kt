@@ -1,8 +1,9 @@
 package com.dev.quickcart.data.model
 
+import androidx.compose.runtime.Stable
 import com.google.firebase.firestore.Blob
 
-
+@Stable
 data class Product(
 
     val prodId: Int = 0,

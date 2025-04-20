@@ -1,6 +1,5 @@
 package com.dev.quickcart.screens.cart
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,19 +11,14 @@ import com.dev.quickcart.navigation.NavigationCommand
 import com.dev.quickcart.navigation.Navigator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import kotlin.text.toInt
 
 
 @HiltViewModel
@@ -37,9 +31,6 @@ constructor(
     private val networkRepository: NetworkRepository,
     private val navigator: Navigator
 ) : ViewModel() {
-
-    val addressId = savedStateHandle.get<String>("json")?.toString()
-        ?: throw IllegalStateException("Address Id is null")
 
     private val _uiState = MutableStateFlow(CartUiState())
     val uiState: StateFlow<CartUiState> = _uiState.asStateFlow()

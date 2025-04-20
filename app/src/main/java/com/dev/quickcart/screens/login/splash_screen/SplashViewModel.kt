@@ -1,15 +1,12 @@
 package com.dev.quickcart.screens.login.splash_screen
 
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.quickcart.navigation.AppScreens
 import com.dev.quickcart.navigation.NavigationCommand
 import com.dev.quickcart.navigation.Navigator
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +19,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-
 
 
 @Suppress("DEPRECATION")

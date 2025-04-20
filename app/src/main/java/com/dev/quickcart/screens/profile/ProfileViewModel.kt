@@ -5,11 +5,9 @@ import androidx.lifecycle.ViewModel
 import com.dev.quickcart.navigation.AppScreens
 import com.dev.quickcart.navigation.NavigationCommand
 import com.dev.quickcart.navigation.Navigator
-import com.dev.quickcart.screens.cart.CartInterActor
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
-import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow

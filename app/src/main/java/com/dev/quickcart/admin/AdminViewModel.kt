@@ -5,8 +5,6 @@ import androidx.lifecycle.ViewModel
 import com.dev.quickcart.navigation.AppScreens
 import com.dev.quickcart.navigation.NavigationCommand
 import com.dev.quickcart.navigation.Navigator
-import com.dev.quickcart.screens.home.HomeInterActor
-import com.dev.quickcart.screens.home.HomeUiState
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +12,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel

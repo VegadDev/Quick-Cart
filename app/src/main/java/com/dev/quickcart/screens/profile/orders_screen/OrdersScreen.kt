@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,20 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.dev.quickcart.R
 import com.dev.quickcart.data.model.CartItem
 import com.dev.quickcart.data.model.UserAddress
-import com.dev.quickcart.screens.common.AddButton
 import com.dev.quickcart.screens.common.CustomCard
 import com.dev.quickcart.screens.common.CustomIcon
-import com.dev.quickcart.screens.common.NewCard
 import com.dev.quickcart.ui.theme.AppTheme
-import com.dev.quickcart.utils.displayQuantity
 import com.google.firebase.Timestamp
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 

@@ -1,6 +1,5 @@
 package com.dev.quickcart.screens.profile.address_screen
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,12 +7,8 @@ import com.dev.quickcart.data.repository.NetworkRepository
 import com.dev.quickcart.navigation.AppScreens
 import com.dev.quickcart.navigation.NavigationCommand
 import com.dev.quickcart.navigation.Navigator
-import com.dev.quickcart.screens.profile.ProfileInterActor
-import com.dev.quickcart.screens.profile.ProfileUiState
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

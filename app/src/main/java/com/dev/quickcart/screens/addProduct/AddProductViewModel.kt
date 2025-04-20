@@ -1,18 +1,12 @@
 package com.dev.quickcart.screens.addProduct
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import coil.util.CoilUtils.result
 import com.dev.quickcart.data.model.Product
 import com.dev.quickcart.data.repository.NetworkRepository
-import com.dev.quickcart.utils.Status
-import com.dev.quickcart.utils.uriToBlob
-import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -22,10 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
 import javax.inject.Inject
-import kotlin.String
 
 
 @HiltViewModel

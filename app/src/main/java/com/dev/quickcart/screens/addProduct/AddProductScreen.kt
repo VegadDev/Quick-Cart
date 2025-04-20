@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.dev.quickcart.screens.common.CustomTextField
 import com.dev.quickcart.screens.common.ImagePicker
 import com.dev.quickcart.screens.common.MyButton
-import com.dev.quickcart.screens.common.MyDropDown
 import com.dev.quickcart.screens.common.MyDropDown1
 import com.dev.quickcart.ui.theme.AppTheme
 

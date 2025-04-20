@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.dev.quickcart.R
-import com.dev.quickcart.screens.common.MyButton
 import com.dev.quickcart.screens.common.CustomIcon
+import com.dev.quickcart.screens.common.MyButton
 import com.dev.quickcart.ui.theme.AppTheme
 
 @Composable

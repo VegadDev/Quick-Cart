@@ -1,7 +1,6 @@
 package com.dev.quickcart.screens.home
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.quickcart.data.model.CartItem
@@ -12,7 +11,6 @@ import com.dev.quickcart.navigation.NavigationCommand
 import com.dev.quickcart.navigation.Navigator
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel

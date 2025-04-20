@@ -2,7 +2,6 @@ package com.dev.quickcart.screens.login.get_profileinfo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dev.quickcart.admin.AdminUiState
 import com.dev.quickcart.data.model.UserAddress
 import com.dev.quickcart.navigation.AppScreens
 import com.dev.quickcart.navigation.NavigationCommand

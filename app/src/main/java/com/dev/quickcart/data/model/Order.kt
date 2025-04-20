@@ -1,8 +1,9 @@
 package com.dev.quickcart.data.model
 
+import androidx.compose.runtime.Stable
 import com.google.firebase.Timestamp
 
-
+@Stable
 data class Order(
     val userId: String = "",
     val address: UserAddress? = null,

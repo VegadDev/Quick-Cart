@@ -2,7 +2,6 @@ package com.dev.quickcart.screens.categories
 
 import androidx.lifecycle.ViewModel
 import com.dev.quickcart.navigation.Navigator
-import com.dev.quickcart.screens.settings.SettingInterActor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

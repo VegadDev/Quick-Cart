@@ -1,8 +1,6 @@
 package com.dev.quickcart.screens.productPage
 
 import com.dev.quickcart.data.model.Product
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 data class ProductPageUiState(
 

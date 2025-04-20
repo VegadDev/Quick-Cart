@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -81,12 +80,7 @@ fun QuickCartNav(
                     type = NavType.StringType
                     defaultValue = ""
                 }),
-                enterTransition = { fadeIn(animationSpec = tween(500)) },
-                exitTransition = { fadeOut(animationSpec = tween(100)) },
-                popEnterTransition = { fadeIn(animationSpec = tween(500)) },
-                popExitTransition = { fadeOut(animationSpec = tween(100)) }
             ) { backStackEntry ->
-
                 AnimatedVisibility(
                     visible = true,
                     enter = fadeIn(animationSpec = tween(durationMillis = 500)),

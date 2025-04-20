@@ -7,8 +7,6 @@ import com.dev.quickcart.data.model.Order
 import com.dev.quickcart.data.repository.NetworkRepository
 import com.dev.quickcart.navigation.NavigationCommand
 import com.dev.quickcart.navigation.Navigator
-import com.dev.quickcart.screens.login.intro.IntroInterActor
-import com.dev.quickcart.screens.profile.address_screen.AddressUiState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel

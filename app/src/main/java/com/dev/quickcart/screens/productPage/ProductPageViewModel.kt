@@ -61,10 +61,10 @@ constructor(
 
     fun preloadProduct(productId: String) {
         viewModelScope.launch {
-            val result = networkRepository.getProducts(productId)
-            _uiState.update {
-                it.copy(
-                    products = result,
+            val result = networkRepository.getProduct(productId)
+            _uiState.update { currentState ->
+                currentState.copy(
+                    products = result.getOrNull(), // Extract Product? from Result
                     isLoading = false
                 )
             }

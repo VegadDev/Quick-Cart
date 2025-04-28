@@ -35,7 +35,7 @@ fun AddProductScreen(interActor: AddProductInterActor, uiState: AddProductUiStat
             Text(
                 "Product Name",
                 style = AppTheme.textStyles.bold.large,
-                color = AppTheme.colors.titleText
+                color = AppTheme.colors.white
             )
             Spacer(Modifier.size(10.dp))
             CustomTextField(
@@ -52,7 +52,7 @@ fun AddProductScreen(interActor: AddProductInterActor, uiState: AddProductUiStat
             Text(
                 "Product Images",
                 style = AppTheme.textStyles.bold.large,
-                color = AppTheme.colors.titleText
+                color = AppTheme.colors.white
             )
             Spacer(Modifier.size(10.dp))
 
@@ -72,7 +72,7 @@ fun AddProductScreen(interActor: AddProductInterActor, uiState: AddProductUiStat
             Text(
                 "Product Price",
                 style = AppTheme.textStyles.bold.large,
-                color = AppTheme.colors.titleText
+                color = AppTheme.colors.white
             )
             Spacer(Modifier.size(10.dp))
             CustomTextField(
@@ -91,7 +91,7 @@ fun AddProductScreen(interActor: AddProductInterActor, uiState: AddProductUiStat
             Text(
                 "Product Description",
                 style = AppTheme.textStyles.bold.large,
-                color = AppTheme.colors.titleText
+                color = AppTheme.colors.white
             )
             Spacer(Modifier.size(10.dp))
             CustomTextField(
@@ -108,7 +108,7 @@ fun AddProductScreen(interActor: AddProductInterActor, uiState: AddProductUiStat
             Text(
                 "Product Category",
                 style = AppTheme.textStyles.bold.large,
-                color = AppTheme.colors.titleText
+                color = AppTheme.colors.white
             )
             Spacer(Modifier.size(10.dp))
             MyDropDown1(
@@ -123,7 +123,7 @@ fun AddProductScreen(interActor: AddProductInterActor, uiState: AddProductUiStat
             Text(
                 "Product Type",
                 style = AppTheme.textStyles.bold.large,
-                color = AppTheme.colors.titleText
+                color = AppTheme.colors.white
             )
             Spacer(Modifier.size(10.dp))
             MyDropDown1(
@@ -150,7 +150,7 @@ fun AddProductScreen(interActor: AddProductInterActor, uiState: AddProductUiStat
             Text(
                 "Product Protein",
                 style = AppTheme.textStyles.bold.large,
-                color = AppTheme.colors.titleText
+                color = AppTheme.colors.white
             )
             Spacer(Modifier.size(10.dp))
             CustomTextField(
@@ -170,7 +170,7 @@ fun AddProductScreen(interActor: AddProductInterActor, uiState: AddProductUiStat
             Text(
                 "Product Calories",
                 style = AppTheme.textStyles.bold.large,
-                color = AppTheme.colors.titleText
+                color = AppTheme.colors.white
             )
             Spacer(Modifier.size(10.dp))
             CustomTextField(
@@ -189,7 +189,7 @@ fun AddProductScreen(interActor: AddProductInterActor, uiState: AddProductUiStat
             Text(
                 "Product Fat",
                 style = AppTheme.textStyles.bold.large,
-                color = AppTheme.colors.titleText
+                color = AppTheme.colors.white
             )
             Spacer(Modifier.size(10.dp))
             CustomTextField(
@@ -208,7 +208,7 @@ fun AddProductScreen(interActor: AddProductInterActor, uiState: AddProductUiStat
             Text(
                 "Product Fiber",
                 style = AppTheme.textStyles.bold.large,
-                color = AppTheme.colors.titleText
+                color = AppTheme.colors.white
             )
             Spacer(Modifier.size(10.dp))
             CustomTextField(

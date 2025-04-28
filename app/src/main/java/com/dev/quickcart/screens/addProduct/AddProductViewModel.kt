@@ -161,34 +161,5 @@ constructor(
 }
 
 
-suspend fun uriToByteList(context: Context, uri: Uri): List<Byte>? {
-    return withContext(Dispatchers.IO) {
-        try {
-            val inputStream = context.contentResolver.openInputStream(uri)
-            val outputStream = ByteArrayOutputStream()
-            val buffer = ByteArray(1024) // 1KB buffer
-            var bytesRead: Int
-            while (inputStream?.read(buffer).also { bytesRead = it ?: -1 } != -1) {
-                outputStream.write(buffer, 0, bytesRead)
-            }
-            inputStream?.close()
-            outputStream.toByteArray().toList() // Convert ByteArray to List<Byte>
-        } catch (e: Exception) {
-            Log.e("UriToByteList", "Conversion failed: ${e.message}", e)
-            null
-        }
-    }
-}
 
 
-fun stringToByteArray(imageString: String): ByteArray? {
-    return try {
-        // Remove square brackets and split by comma
-        val byteStrings = imageString.removeSurrounding("[", "]").split(", ")
-        val byteList = byteStrings.map { it.trim().toByte() }
-        byteList.toByteArray()
-    } catch (e: Exception) {
-        Log.e("StringToByteArray", "Conversion failed: ${e.message}", e)
-        null
-    }
-}

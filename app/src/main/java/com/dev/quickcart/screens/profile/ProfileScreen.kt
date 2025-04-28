@@ -2,7 +2,6 @@ package com.dev.quickcart.screens.profile
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -28,11 +28,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.dev.quickcart.R
@@ -83,7 +85,7 @@ fun ProfileScreen(
                 Text(
                     "Profile",
                     style = AppTheme.textStyles.extraBold.largeTitle,
-                    color = AppTheme.colors.titleText,
+                    color = AppTheme.colors.white,
                     modifier = Modifier.padding(end = 170.dp, top = 20.dp)
                 )
 
@@ -111,14 +113,14 @@ fun ProfileScreen(
                 Text(
                     text = uiState.userName,
                     style = AppTheme.textStyles.extraBold.large,
-                    color = AppTheme.colors.titleText,
+                    color = AppTheme.colors.white,
                     modifier = Modifier.padding(top = 20.dp)
                 )
 
                 Text(
                     text = uiState.userId,
                     style = AppTheme.textStyles.regular.regular,
-                    color = AppTheme.colors.titleText,
+                    color = AppTheme.colors.white,
                     modifier = Modifier.padding(top = 10.dp)
                 )
 
@@ -129,7 +131,7 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = 50.dp),
-                colors = CardDefaults.cardColors(AppTheme.colors.cardBackgroundColor),
+                colors = CardDefaults.cardColors(AppTheme.colors.background),
                 shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
             ) {
                 Column(
@@ -140,65 +142,142 @@ fun ProfileScreen(
                     Text(
                         "Account Overview",
                         style = AppTheme.textStyles.regular.large,
-                        color = AppTheme.colors.titleText,
+                        color = AppTheme.colors.white,
                         modifier = Modifier.padding(top = 10.dp , start = 15.dp)
                     )
 
-                    Row(
+                    CustomCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 30.dp, start = 15.dp, end = 15.dp)
-                            .clickable{ interActor.onOrdersClick() },
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(top = 20.dp),
+                        onClick = { interActor.onOrdersClick() }
                     ) {
-                        CustomIcon(
-                            icon = R.drawable.ic_myorders,
-                            modifier = Modifier,
-                            imageModifier = Modifier.size(40.dp),
-                            isCircle = false
-                        )
-                        Text(
-                            "My Orders",
-                            style = AppTheme.textStyles.regular.regular,
-                            color = AppTheme.colors.titleText,
-                            modifier = Modifier.padding(start = 20.dp),
-                        )
-                        Spacer(Modifier.weight(1f))
-                        CustomIcon(
-                            icon = R.drawable.ic_forward_arrow,
-                            modifier = Modifier,
-                            imageModifier = Modifier.size(20.dp),
-                            colorFilter = ColorFilter.tint(AppTheme.colors.titleText)
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(15.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CustomIcon(
+                                icon = R.drawable.ic_myorders,
+                                modifier = Modifier,
+                                imageModifier = Modifier.size(40.dp),
+                                isCircle = false
+                            )
+                            Column {
+                                Text(
+                                    "My Orders",
+                                    style = AppTheme.textStyles.regular.large,
+                                    color = AppTheme.colors.white,
+                                    fontSize = 17.sp,
+                                    modifier = Modifier.padding(start = 20.dp),
+                                )
+                                Text(
+                                    "View your order history",
+                                    style = AppTheme.textStyles.regular.regular,
+                                    color = AppTheme.colors.lightGray,
+                                    fontSize = 13.sp,
+                                    modifier = Modifier.padding(start = 20.dp),
+                                )
+                            }
+                            Spacer(Modifier.weight(1f))
+                            CustomIcon(
+                                icon = R.drawable.ic_forward_arrow,
+                                modifier = Modifier,
+                                imageModifier = Modifier.size(20.dp),
+                                colorFilter = ColorFilter.tint(AppTheme.colors.white)
+                            )
+                        }
                     }
 
 
-                    Row(
+                    CustomCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 30.dp, start = 15.dp, end = 15.dp)
-                            .clickable{ interActor.onAddressesClick() },
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(top = 20.dp),
+                        onClick = { interActor.onAddressesClick() }
                     ) {
-                        CustomIcon(
-                            icon = R.drawable.ic_addresses,
-                            modifier = Modifier,
-                            imageModifier = Modifier.size(40.dp),
-                            isCircle = false
-                        )
-                        Text(
-                            "Addresses",
-                            style = AppTheme.textStyles.regular.regular,
-                            color = AppTheme.colors.titleText,
-                            modifier = Modifier.padding(start = 20.dp),
-                        )
-                        Spacer(Modifier.weight(1f))
-                        CustomIcon(
-                            icon = R.drawable.ic_forward_arrow,
-                            modifier = Modifier,
-                            imageModifier = Modifier.size(20.dp),
-                            colorFilter = ColorFilter.tint(AppTheme.colors.titleText)
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(15.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CustomIcon(
+                                icon = R.drawable.ic_addresses,
+                                modifier = Modifier,
+                                imageModifier = Modifier.size(40.dp),
+                                isCircle = false
+                            )
+                            Column {
+                                Text(
+                                    "Addresses",
+                                    style = AppTheme.textStyles.regular.large,
+                                    color = AppTheme.colors.white,
+                                    fontSize = 17.sp,
+                                    modifier = Modifier.padding(start = 20.dp),
+                                )
+                                Text(
+                                    "Manage delivery addresses",
+                                    style = AppTheme.textStyles.regular.regular,
+                                    color = AppTheme.colors.lightGray,
+                                    fontSize = 13.sp,
+                                    modifier = Modifier.padding(start = 20.dp),
+                                )
+                            }
+                            Spacer(Modifier.weight(1f))
+                            CustomIcon(
+                                icon = R.drawable.ic_forward_arrow,
+                                modifier = Modifier,
+                                imageModifier = Modifier.size(20.dp),
+                                colorFilter = ColorFilter.tint(AppTheme.colors.white)
+                            )
+                        }
+                    }
+
+
+                    CustomCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 20.dp),
+                        onClick = { interActor.onAddressesClick() }
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(15.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CustomIcon(
+                                icon = R.drawable.ic_addresses,
+                                modifier = Modifier,
+                                imageModifier = Modifier.size(40.dp),
+                                isCircle = false
+                            )
+                            Column {
+                                Text(
+                                    "Edit Profile",
+                                    style = AppTheme.textStyles.regular.large,
+                                    color = AppTheme.colors.white,
+                                    fontSize = 17.sp,
+                                    modifier = Modifier.padding(start = 20.dp),
+                                )
+                                Text(
+                                    "Update your personal information",
+                                    style = AppTheme.textStyles.regular.regular,
+                                    color = AppTheme.colors.lightGray,
+                                    fontSize = 13.sp,
+                                    modifier = Modifier.padding(start = 20.dp),
+                                )
+                            }
+                            Spacer(Modifier.weight(1f))
+                            CustomIcon(
+                                icon = R.drawable.ic_forward_arrow,
+                                modifier = Modifier,
+                                imageModifier = Modifier.size(20.dp),
+                                colorFilter = ColorFilter.tint(AppTheme.colors.white)
+                            )
+                        }
                     }
 
 
@@ -218,35 +297,35 @@ fun ProfileScreen(
                         )
                     }
 
-                    Row(
+                    Spacer(Modifier.weight(1f))
+                    CustomCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 30.dp, start = 15.dp, end = 15.dp)
-                            .clickable{ showDialog = true },
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(top = 20.dp),
+                        onClick = { showDialog = true }
                     ) {
-                        CustomIcon(
-                            icon = if (isSystemInDarkTheme()) R.drawable.ic_logout else R.drawable.ic_logout_light,
-                            modifier = Modifier,
-                            imageModifier = Modifier.size(40.dp),
-                            isCircle = false
-                        )
-                        Text(
-                            "Logout",
-                            style = AppTheme.textStyles.regular.regular,
-                            color = AppTheme.colors.titleText,
-                            modifier = Modifier.padding(start = 20.dp),
-                        )
-                        Spacer(Modifier.weight(1f))
-                        CustomIcon(
-                            icon = R.drawable.ic_forward_arrow,
-                            modifier = Modifier,
-                            imageModifier = Modifier.size(20.dp),
-                            colorFilter = ColorFilter.tint(AppTheme.colors.titleText)
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(15.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CustomIcon(
+                                icon = if (isSystemInDarkTheme()) R.drawable.ic_logout else R.drawable.ic_logout_light,
+                                modifier = Modifier,
+                                imageModifier = Modifier.size(35.dp),
+                                isCircle = false
+                            )
+                            Text(
+                                "Logout",
+                                style = AppTheme.textStyles.regular.large,
+                                color = AppTheme.colors.white,
+                                modifier = Modifier.padding(start = 20.dp),
+                            )
+                        }
                     }
 
-                    Spacer(Modifier.weight(1f))
+                    Spacer(Modifier.height(20.dp))
 
                 }
             }
@@ -286,7 +365,7 @@ fun CustomAlert(
                 Text(
                     text = message,
                     style = AppTheme.textStyles.extraBold.large,
-                    color = AppTheme.colors.titleText,
+                    color = AppTheme.colors.white,
                     modifier = Modifier.padding(top = 15.dp)
                 )
                 Spacer(Modifier.size(20.dp))

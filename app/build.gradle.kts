@@ -20,8 +20,21 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("D:/Android Key Store/QuickCart_key.jks")
+            storePassword = "Devdatt@#12"
+            keyAlias = "quickcart"
+            keyPassword = "Devdatt@#12"
+        }
+    }
+
+
+
     buildTypes {
-        release {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

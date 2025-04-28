@@ -1,6 +1,6 @@
 package com.dev.quickcart.screens.profile.address_screen
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
@@ -23,11 +25,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.dev.quickcart.R
 import com.dev.quickcart.data.model.UserAddress
 import com.dev.quickcart.screens.common.CustomCard
 import com.dev.quickcart.screens.common.CustomIcon
 import com.dev.quickcart.screens.common.MyButton
+import com.dev.quickcart.screens.common.TopBar
 import com.dev.quickcart.screens.profile.CustomAlert
 import com.dev.quickcart.ui.theme.AppTheme
 
@@ -39,45 +43,20 @@ fun AddressScreen(interActor: AddressInterActor, uiState: AddressUiState) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 0.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(space = 100.dp),
-        ) {
 
-            CustomIcon(
-                icon = R.drawable.ic_back_arrow,
-                modifier = Modifier
-                    .padding(start = 16.dp, top = 15.dp)
-                    .clickable { interActor.onBackClick() },
-                imageModifier = Modifier.size(25.dp),
-                colorFilter = ColorFilter.tint(AppTheme.colors.titleText)
-            )
-
-
-            Text(
-                "My Addresses 🏠",
-                style = AppTheme.textStyles.bold.largeTitle,
-                color = AppTheme.colors.titleText,
-                modifier = Modifier.padding(top = 15.dp)
-            )
-
-        }
-        Divider(
-            color = AppTheme.colors.lightGray,
-            thickness = 1.dp,
-            modifier = Modifier.padding(top = 20.dp)
+        TopBar(
+            title = "My Addresses 🏠",
+            onBackClick = { interActor.onBackClick() }
         )
+
 
         var showDialog by remember {
             mutableStateOf(false)
         }
 
-        if (showDialog){
+        if (showDialog) {
             CustomAlert(
-                onDismiss = {showDialog = false},
+                onDismiss = { showDialog = false },
                 onConfirm = {
                     showDialog = false
                     //interActor.onLogoutClick()
@@ -87,7 +66,11 @@ fun AddressScreen(interActor: AddressInterActor, uiState: AddressUiState) {
             )
         }
 
-        LazyColumn {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+        ) {
             items(uiState.addresses) { address ->
                 AddressCard(
                     address,
@@ -103,7 +86,20 @@ fun AddressScreen(interActor: AddressInterActor, uiState: AddressUiState) {
         MyButton(
             "Add New Address",
             onClick = { interActor.onAddAddressClick() },
-            modifier = Modifier.fillMaxWidth(0.9f).align(Alignment.CenterHorizontally).padding(bottom = 20.dp)
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .align(Alignment.CenterHorizontally)
+                .padding(bottom = 30.dp),
+            cornerShape = 17,
+            icon = {
+                CustomIcon(
+                    icon = R.drawable.ic_add,
+                    modifier = Modifier.padding(end = 20.dp),
+                    imageModifier = Modifier.size(25.dp),
+                    isCircle = false,
+                    colorFilter = ColorFilter.tint(AppTheme.colors.white)
+                )
+            }
         )
 
     }
@@ -114,81 +110,133 @@ fun AddressScreen(interActor: AddressInterActor, uiState: AddressUiState) {
 fun AddressCard(
     address: UserAddress,
     onEditClick: () -> Unit = {},
-    onRemoveClick: () -> Unit = {}
+    onRemoveClick: () -> Unit = {},
 ) {
     CustomCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(15.dp),
-        cardColor = AppTheme.colors.billCardBg,
-        border = BorderStroke(1.dp, AppTheme.colors.borderGray),
         cardElevation = 20,
         cardCorner = 17,
         isClickable = false
-    ){
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(15.dp)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val image: Int = when(address.category){
-                    "Home" -> R.drawable.ic_home
-                    "Work" -> R.drawable.ic_work
-                    "Flat" -> R.drawable.ic_flat
-                    else -> R.drawable.ic_other
-                }
-                CustomIcon(
-                    icon = image,
-                    modifier = Modifier.padding(start = 5.dp),
-                    imageModifier = Modifier.size(27.dp),
-                    colorFilter = ColorFilter.tint(AppTheme.colors.titleText),
-                    isCircle = false
-                )
-                Text(
-                    address.category,
-                    color = AppTheme.colors.titleText,
-                    style = AppTheme.textStyles.regular.large,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-                Spacer(Modifier.weight(1f))
-                Text(
-                    "+91 ${address.phoneNumber}",
-                    color = AppTheme.colors.lightGray,
-                    style = AppTheme.textStyles.regular.large
-                )
-            }
-            Text(
-                "${ address.houseAddress }, ${ address.areaAddress } ${address.landmark ?: ""}",
-                color = AppTheme.colors.titleText,
-                style = AppTheme.textStyles.regular.large,
-                modifier = Modifier.padding(top = 10.dp)
-            )
-
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 15.dp),
+                    .padding(15.dp),
+            ) {
+
+                Column(
+                    modifier = Modifier.padding(top = 5.dp)
+                ) {
+                    val image: Int = when (address.category) {
+                        "Home" -> R.drawable.ic_home
+                        "Work" -> R.drawable.ic_work
+                        "Flat" -> R.drawable.ic_flat
+                        else -> R.drawable.ic_other
+                    }
+                    CustomIcon(
+                        icon = image,
+                        modifier = Modifier,
+                        imageModifier = Modifier.size(25.dp),
+                        colorFilter = ColorFilter.tint(AppTheme.colors.primary),
+                        isCircle = false
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .padding(start = 15.dp)
+                        .weight(1f)
+                ) {
+                    Text(
+                        address.category,
+                        color = AppTheme.colors.primaryText,
+                        style = AppTheme.textStyles.regular.large,
+                        modifier = Modifier
+                    )
+                    Text(
+                        "${address.houseAddress}, ${address.areaAddress} ${address.landmark ?: ""}",
+                        color = AppTheme.colors.secondaryText,
+                        style = AppTheme.textStyles.regular.regular,
+                        fontSize = 15.sp,
+                        modifier = Modifier
+                    )
+                    Text(
+                        "+91 ${address.phoneNumber}",
+                        color = AppTheme.colors.secondaryText,
+                        fontSize = 15.sp,
+                        style = AppTheme.textStyles.regular.regular
+                    )
+                }
+
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    "Edit",
-                    color = AppTheme.colors.primary,
-                    style = AppTheme.textStyles.regular.regular,
-                    modifier = Modifier.padding(start = 6.dp).clickable { onEditClick() }
-                )
-                Text(
-                    "Remove",
-                    color = AppTheme.colors.error,
-                    style = AppTheme.textStyles.regular.regular,
-                    modifier = Modifier.padding(start = 10.dp).clickable { onRemoveClick() }
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .background(AppTheme.colors.edit_bg)
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .height(40.dp)
+                        .clickable { onEditClick() }
+                ) {
+                    CustomIcon(
+                        icon = R.drawable.edit,
+                        modifier = Modifier
+                            .padding(start = 10.dp)
+                            .clickable { onEditClick() },
+                        imageModifier = Modifier.size(25.dp),
+                        isCircle = false,
+                        colorFilter = ColorFilter.tint(AppTheme.colors.brandText)
+                    )
+                    Text(
+                        "Edit",
+                        color = AppTheme.colors.brandText,
+                        style = AppTheme.textStyles.regular.regular,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .background(AppTheme.colors.delete_bg)
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .height(40.dp)
+                        .clickable { onRemoveClick() }
+                ) {
+                    CustomIcon(
+                        icon = R.drawable.delete,
+                        modifier = Modifier
+                            .padding(start = 10.dp)
+                            .clickable { onRemoveClick() },
+                        imageModifier = Modifier.size(22.dp),
+                        isCircle = false,
+                        colorFilter = ColorFilter.tint(AppTheme.colors.error)
+                    )
+                    Text(
+                        "Delete",
+                        color = AppTheme.colors.error,
+                        style = AppTheme.textStyles.regular.regular,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+
             }
+
 
         }
     }

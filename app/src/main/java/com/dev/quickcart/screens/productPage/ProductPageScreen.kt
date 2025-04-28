@@ -121,7 +121,7 @@ fun ProductPageScreen(interActor: ProductPageInterActor, uiState: ProductPageUiS
                             Text(
                                 text = it.prodName,
                                 style = AppTheme.textStyles.extraBold.largeTitle,
-                                color = AppTheme.colors.titleText,
+                                color = AppTheme.colors.white,
                                 modifier = Modifier.padding(top = 5.dp, start = 8.dp)
                             )
                         }
@@ -164,7 +164,7 @@ fun ProductPageScreen(interActor: ProductPageInterActor, uiState: ProductPageUiS
                                 Text(
                                     text = productQuantity.value.toString(),
                                     style = AppTheme.textStyles.bold.large,
-                                    color = AppTheme.colors.titleText,
+                                    color = AppTheme.colors.white,
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
                                 )
                             }
@@ -185,7 +185,7 @@ fun ProductPageScreen(interActor: ProductPageInterActor, uiState: ProductPageUiS
                             Text(
                                 text = "₹ $updatedPrice",
                                 style = AppTheme.textStyles.extraBold.large,
-                                color = AppTheme.colors.titleText,
+                                color = AppTheme.colors.white,
                                 fontSize = 20.sp,
                                 modifier = Modifier.padding(15.dp)
                             )
@@ -212,7 +212,7 @@ fun ProductPageScreen(interActor: ProductPageInterActor, uiState: ProductPageUiS
                                     "One ${it.prodName} gives:"
                                 },
                                 style = AppTheme.textStyles.extraBold.large,
-                                color = AppTheme.colors.titleText,
+                                color = AppTheme.colors.white,
                                 modifier = Modifier.padding(top = 15.dp, bottom = 15.dp)
                             )
                         }

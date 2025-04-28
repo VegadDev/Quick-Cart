@@ -52,7 +52,7 @@ fun SplashScreen(
         Text(
             text = "Quick Cart",
             style = AppTheme.textStyles.extraBold.largeTitle,
-            color = AppTheme.colors.titleText,
+            color = AppTheme.colors.white,
             modifier = Modifier
                 .align(Alignment.Center)
                 .padding(top = 180.dp)

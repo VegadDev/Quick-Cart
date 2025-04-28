@@ -48,9 +48,16 @@ fun GetProfileScreen(interActor: GetProfileInterActor , uiState: GetProfileUiSta
     ){
 
         Text(
-            "Enter UserName",
+            "Add Address",
+            style = AppTheme.textStyles.bold.largeTitle,
+            color = AppTheme.colors.white,
+            modifier = Modifier.padding(17.dp).align(Alignment.CenterHorizontally)
+        )
+
+        Text(
+            "Enter Username",
             style = AppTheme.textStyles.bold.large,
-            color = AppTheme.colors.titleText
+            color = AppTheme.colors.white
         )
         Spacer(Modifier.size(10.dp))
         CustomTextField(
@@ -66,7 +73,7 @@ fun GetProfileScreen(interActor: GetProfileInterActor , uiState: GetProfileUiSta
         Text(
             "Enter Phone Number",
             style = AppTheme.textStyles.bold.large,
-            color = AppTheme.colors.titleText
+            color = AppTheme.colors.white
         )
         Spacer(Modifier.size(10.dp))
 
@@ -89,7 +96,7 @@ fun GetProfileScreen(interActor: GetProfileInterActor , uiState: GetProfileUiSta
                 Text(
                     "+91  ",
                     style = AppTheme.textStyles.extraBold.large,
-                    color = AppTheme.colors.titleText,
+                    color = AppTheme.colors.white,
                     modifier = Modifier.padding(start = 13.dp)
                 )
             }
@@ -102,7 +109,7 @@ fun GetProfileScreen(interActor: GetProfileInterActor , uiState: GetProfileUiSta
         Text(
             "House / Flat / Block NO.",
             style = AppTheme.textStyles.bold.large,
-            color = AppTheme.colors.titleText
+            color = AppTheme.colors.white
         )
         Spacer(Modifier.size(10.dp))
         CustomTextField(
@@ -120,7 +127,7 @@ fun GetProfileScreen(interActor: GetProfileInterActor , uiState: GetProfileUiSta
         Text(
             "Area / Road / Apartment",
             style = AppTheme.textStyles.bold.large,
-            color = AppTheme.colors.titleText
+            color = AppTheme.colors.white
         )
         Spacer(Modifier.size(10.dp))
         CustomTextField(
@@ -137,7 +144,7 @@ fun GetProfileScreen(interActor: GetProfileInterActor , uiState: GetProfileUiSta
         Text(
             "Landmark (Optional)",
             style = AppTheme.textStyles.bold.large,
-            color = AppTheme.colors.titleText
+            color = AppTheme.colors.white
         )
         Spacer(Modifier.size(10.dp))
         CustomTextField(
@@ -154,7 +161,7 @@ fun GetProfileScreen(interActor: GetProfileInterActor , uiState: GetProfileUiSta
         Text(
             "Save As",
             style = AppTheme.textStyles.bold.large,
-            color = AppTheme.colors.titleText
+            color = AppTheme.colors.white
         )
 
 
@@ -177,7 +184,7 @@ fun GetProfileScreen(interActor: GetProfileInterActor , uiState: GetProfileUiSta
             }
         }
 
-
+        Spacer(Modifier.weight(1f))
         MyButton(
             "Submit",
             onClick = { interActor.submit()},

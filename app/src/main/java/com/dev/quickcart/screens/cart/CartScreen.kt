@@ -71,14 +71,14 @@ fun CartScreen(interActor: CartInterActor, uiState: CartUiState) {
                         .padding(start = 16.dp , top = 15.dp)
                         .clickable { interActor.onBackClick() },
                     imageModifier = Modifier.size(25.dp),
-                    colorFilter = ColorFilter.tint(AppTheme.colors.onPrimary)
+                    colorFilter = ColorFilter.tint(AppTheme.colors.white)
                 )
 
 
                 Text(
                     "My Cart 🛒",
                     style = AppTheme.textStyles.bold.large,
-                    color = AppTheme.colors.titleText,
+                    color = AppTheme.colors.white,
                     modifier = Modifier.padding(top = 15.dp)
                 )
 
@@ -96,7 +96,7 @@ fun CartScreen(interActor: CartInterActor, uiState: CartUiState) {
             Text(
                 "Your cart is empty 😒",
                 style = AppTheme.textStyles.bold.largeTitle,
-                color = AppTheme.colors.titleText,
+                color = AppTheme.colors.white,
                 modifier = Modifier.padding(top = 15.dp).weight(0.9f)
             )
             }
@@ -126,14 +126,14 @@ fun CartScreen(interActor: CartInterActor, uiState: CartUiState) {
                                 .padding(start = 16.dp, top = 15.dp)
                                 .clickable { interActor.onBackClick() },
                             imageModifier = Modifier.size(25.dp),
-                            colorFilter = ColorFilter.tint(AppTheme.colors.onPrimary)
+                            colorFilter = ColorFilter.tint(AppTheme.colors.white)
                         )
 
 
                         Text(
                             "My Cart 🛒",
                             style = AppTheme.textStyles.bold.largeTitle,
-                            color = AppTheme.colors.titleText,
+                            color = AppTheme.colors.white,
                             modifier = Modifier.padding(top = 15.dp)
                         )
 
@@ -155,7 +155,7 @@ fun CartScreen(interActor: CartInterActor, uiState: CartUiState) {
                     } ?: Text("No address selected")
 
                     LazyColumn(
-                        modifier = Modifier.padding(top = 10.dp),
+                        modifier = Modifier.padding(top = 10.dp, bottom = 180.dp ),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
@@ -175,7 +175,6 @@ fun CartScreen(interActor: CartInterActor, uiState: CartUiState) {
                             )
                         }
                     }
-
 
                 }
 
@@ -210,7 +209,7 @@ fun CartScreen(interActor: CartInterActor, uiState: CartUiState) {
                         Text(
                             "Grand total",
                             style = AppTheme.textStyles.extraBold.largeTitle,
-                            color = AppTheme.colors.titleText,
+                            color = AppTheme.colors.white,
                             fontSize = 19.sp
                         )
                         Spacer(Modifier.weight(1f))
@@ -218,7 +217,7 @@ fun CartScreen(interActor: CartInterActor, uiState: CartUiState) {
                         Text(
                             "₹ $total",
                             style = AppTheme.textStyles.regular.large,
-                            color = AppTheme.colors.titleText
+                            color = AppTheme.colors.white
                         )
                     }
                     MyButton(
@@ -307,7 +306,7 @@ fun BottomSheetExample(
                         Text(
                             "₹ 40",
                             style = AppTheme.textStyles.regular.large,
-                            color = AppTheme.colors.titleText
+                            color = AppTheme.colors.white
                         )
                     }
                     HorizontalDivider(
@@ -333,7 +332,7 @@ fun BottomSheetExample(
                         Text(
                             "₹ 15",
                             style = AppTheme.textStyles.regular.large,
-                            color = AppTheme.colors.titleText
+                            color = AppTheme.colors.white
                         )
                     }
                 }
@@ -348,7 +347,7 @@ fun BottomSheetExample(
                     Text(
                         "Bill summary",
                         style = AppTheme.textStyles.extraBold.largeTitle,
-                        color = AppTheme.colors.titleText,
+                        color = AppTheme.colors.white,
                         fontSize = 17.sp,
                         modifier = Modifier.padding(top = 5.dp, start = 2.dp)
                     )
@@ -394,113 +393,118 @@ fun CartItemCard(
     onDecrement: () -> Unit = {},
 ) {
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
 
-        cartItem.productImage?.let { blob ->
-            val bitmap = remember(blob) { // Cache bitmap decoding
-                BitmapFactory.decodeByteArray(blob.toBytes(), 0, blob.toBytes().size)
-            }
-            bitmap?.let {
-                Image(
-                    bitmap = it.asImageBitmap(),
-                    contentDescription = "Product Image",
-                    filterQuality = FilterQuality.Low,
-                    modifier = Modifier.size(70.dp),
-                )
-            }
-        } ?: Text(
-            text = "No image",
+    CustomCard(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
+        cardCorner = 20,
+        isClickable = false
+    ) {
+        Row(
             modifier = Modifier
-                .size(80.dp)
-                .padding(end = 16.dp),
-        )
-        Column(
-            modifier = Modifier.padding(start = 15.dp)
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                cartItem.productName,
-                style = AppTheme.textStyles.bold.largeTitle,
-                color = AppTheme.colors.titleText,
-                fontSize = 19.sp
+
+            cartItem.productImage?.let { blob ->
+                val bitmap = remember(blob) { // Cache bitmap decoding
+                    BitmapFactory.decodeByteArray(blob.toBytes(), 0, blob.toBytes().size)
+                }
+                bitmap?.let {
+                    Image(
+                        bitmap = it.asImageBitmap(),
+                        contentDescription = "Product Image",
+                        filterQuality = FilterQuality.Low,
+                        modifier = Modifier.size(60.dp),
+                    )
+                }
+            } ?: Text(
+                text = "No image",
+                modifier = Modifier
+                    .size(60.dp)
+                    .padding(end = 16.dp),
             )
-            Text(
-                displayQuantity(cartItem),
-                style = AppTheme.textStyles.regular.regular,
-                color = AppTheme.colors.lightGray,
-                modifier = Modifier.padding(top = 3.dp)
-            )
-            Row(
-                Modifier.padding(top = 15.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier.padding(start = 15.dp)
             ) {
-                SquareBorderProgressIndicator(
-                    isLoading = isLoadingMinus,
-                    borderWidth = 1.8.dp,
-                    iconTint = AppTheme.colors.lightGray,
-                    iconSize = 25.dp,
-                    size = 35,
-                    cornerRadius = 10.dp,
-                    onClick = { if (isLoadingPlus) null else onDecrement() },
-                    icon = R.drawable.ic_remove
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "${cartItem.productName}   - ",
+                        style = AppTheme.textStyles.bold.largeTitle,
+                        color = AppTheme.colors.white,
+                        fontSize = 17.sp
+                    )
+                    Text(
+                        displayQuantity(cartItem),
+                        style = AppTheme.textStyles.regular.regular,
+                        color = AppTheme.colors.lightGray,
+                        fontSize = 15.sp,
+                        modifier = Modifier.padding(start = 10.dp)
+                    )
+                }
+                Row(
+                    Modifier.padding(top = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SquareBorderProgressIndicator(
+                        isLoading = isLoadingMinus,
+                        borderWidth = 1.7.dp,
+                        iconTint = AppTheme.colors.lightGray,
+                        iconSize = 25.dp,
+                        size = 33,
+                        cornerRadius = 10.dp,
+                        onClick = { if (isLoadingPlus) null else onDecrement() },
+                        icon = R.drawable.ic_remove
+                    )
+
+                    Text(
+                        cartItem.quantity.toString(),
+                        style = AppTheme.textStyles.bold.largeTitle,
+                        color = AppTheme.colors.white,
+                        modifier = Modifier.padding(horizontal = 17.dp),
+                        fontSize = 20.sp
+                    )
+
+                    SquareBorderProgressIndicator(
+                        isLoading = isLoadingPlus,
+                        borderWidth = 1.7.dp,
+                        iconSize = 25.dp,
+                        size = 33,
+                        cornerRadius = 10.dp,
+                        onClick = { onIncrement() },
+                        icon = R.drawable.ic_add
+                    )
+
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 10.dp),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                CustomIcon(
+                    icon = R.drawable.ic_close,
+                    modifier = Modifier
+                        .padding(bottom = 10.dp)
+                        .clickable { onRemove() },
+                    imageModifier = Modifier.size(25.dp),
+                    colorFilter = ColorFilter.tint(AppTheme.colors.minusGray)
                 )
 
                 Text(
-                    cartItem.quantity.toString(),
+                    "₹ ${cartItem.productPrice}",
                     style = AppTheme.textStyles.bold.largeTitle,
-                    color = AppTheme.colors.titleText,
-                    modifier = Modifier.padding(horizontal = 17.dp),
-                    fontSize = 20.sp
+                    color = AppTheme.colors.primary,
+                    fontSize = 19.sp,
+                    modifier = Modifier.padding(top = 10.dp)
                 )
-
-                SquareBorderProgressIndicator(
-                    isLoading = isLoadingPlus,
-                    borderWidth = 1.8.dp,
-                    iconSize = 25.dp,
-                    size = 35,
-                    cornerRadius = 10.dp,
-                    onClick = { onIncrement() },
-                    icon = R.drawable.ic_add
-                )
-
             }
+
         }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(end = 10.dp),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            CustomIcon(
-                icon = R.drawable.ic_close,
-                modifier = Modifier
-                    .padding(bottom = 10.dp)
-                    .clickable { onRemove() },
-                imageModifier = Modifier.size(25.dp),
-                colorFilter = ColorFilter.tint(AppTheme.colors.minusGray)
-            )
-
-            Text(
-                "₹ ${cartItem.productPrice}",
-                style = AppTheme.textStyles.bold.largeTitle,
-                color = AppTheme.colors.primary,
-                fontSize = 21.sp,
-                modifier = Modifier.padding(top = 30.dp)
-            )
-        }
-
     }
-    Divider(
-        color = AppTheme.colors.lightGray,
-        thickness = 1.dp,
-        modifier = Modifier
-            .fillMaxWidth(0.9f)
-            .padding(top = 10.dp)
-    )
 }

@@ -29,6 +29,7 @@ import com.dev.quickcart.data.model.CartItem
 import com.dev.quickcart.data.model.UserAddress
 import com.dev.quickcart.screens.common.CustomCard
 import com.dev.quickcart.screens.common.CustomIcon
+import com.dev.quickcart.screens.common.TopBar
 import com.dev.quickcart.ui.theme.AppTheme
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
@@ -42,36 +43,9 @@ fun OrderScreen(interActor: OrdersInterActor, uiState: OrdersUiState) {
         modifier = Modifier.fillMaxSize()
     ) {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 0.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(space = 100.dp),
-        ) {
-
-            CustomIcon(
-                icon = R.drawable.ic_back_arrow,
-                modifier = Modifier
-                    .padding(start = 16.dp, top = 15.dp)
-                    .clickable { interActor.onBackClick() },
-                imageModifier = Modifier.size(25.dp),
-                colorFilter = ColorFilter.tint(AppTheme.colors.titleText)
-            )
-
-
-            androidx.compose.material.Text(
-                "My Orders 📦",
-                style = AppTheme.textStyles.bold.largeTitle,
-                color = AppTheme.colors.titleText,
-                modifier = Modifier.padding(top = 15.dp)
-            )
-
-        }
-        Divider(
-            color = AppTheme.colors.lightGray,
-            thickness = 1.dp,
-            modifier = Modifier.padding(top = 20.dp)
+        TopBar(
+            title = "My Orders",
+            onBackClick = { interActor.onBackClick() }
         )
 
 
@@ -129,7 +103,7 @@ fun OrderCard(
                     Text(
                         "Shipping Address - ${it.category}",
                         style = AppTheme.textStyles.regular.small,
-                        color = AppTheme.colors.titleText
+                        color = AppTheme.colors.white
                     )
                 }
                 Spacer(Modifier.weight(1f))
@@ -145,7 +119,7 @@ fun OrderCard(
                 Text(
                     "${it.houseAddress}, ${it.areaAddress}",
                     style = AppTheme.textStyles.regular.small,
-                    color = AppTheme.colors.titleText
+                    color = AppTheme.colors.white
                 )
             }
 
@@ -191,7 +165,7 @@ fun OrderCard(
                         Text(
                             cartItem.productName,
                             style = AppTheme.textStyles.regular.regular,
-                            color = AppTheme.colors.titleText
+                            color = AppTheme.colors.white
                         )
                         Spacer(Modifier.weight(0.1f))
                         Text(
@@ -203,13 +177,13 @@ fun OrderCard(
                         Text(
                             "${cartItem.quantity}",
                             style = AppTheme.textStyles.regular.regular,
-                            color = AppTheme.colors.titleText,
+                            color = AppTheme.colors.white,
                         )
                         Spacer(Modifier.weight(1f))
                         Text(
                             "${cartItem.productPrice}",
                             style = AppTheme.textStyles.regular.regular,
-                            color = AppTheme.colors.titleText
+                            color = AppTheme.colors.white
                         )
                     }
                 }
@@ -220,13 +194,13 @@ fun OrderCard(
                 Text(
                     "Total Amount",
                     style = AppTheme.textStyles.regular.regular,
-                    color = AppTheme.colors.titleText
+                    color = AppTheme.colors.white
                 )
                 Spacer(Modifier.weight(1f))
                 Text(
                     "₹ $totalPrice",
                     style = AppTheme.textStyles.regular.regular,
-                    color = AppTheme.colors.titleText
+                    color = AppTheme.colors.white
                 )
             }
             Divider(
@@ -243,7 +217,7 @@ fun OrderCard(
                 Text(
                     formattedDate,
                     style = AppTheme.textStyles.regular.regular,
-                    color = AppTheme.colors.titleText
+                    color = AppTheme.colors.white
                 )
                 Spacer(Modifier.weight(1f))
                 Text(
@@ -288,7 +262,7 @@ fun OrderCard1(
                         Text(
                             "Shipping Address - ${it.category}",
                             style = AppTheme.textStyles.regular.small,
-                            color = AppTheme.colors.titleText
+                            color = AppTheme.colors.white
                         )
                     }
                     Spacer(Modifier.weight(1f))
@@ -305,7 +279,7 @@ fun OrderCard1(
                     Text(
                         "${it.houseAddress}, ${it.areaAddress}",
                         style = AppTheme.textStyles.regular.small,
-                        color = AppTheme.colors.titleText
+                        color = AppTheme.colors.white
                     )
                 }
 
@@ -341,7 +315,7 @@ fun OrderCard1(
                             Text(
                                 cartItems.productName,
                                 style = AppTheme.textStyles.regular.regular,
-                                color = AppTheme.colors.titleText
+                                color = AppTheme.colors.white
                             )
                             Spacer(Modifier.weight(0.1f))
                             Text(
@@ -353,13 +327,13 @@ fun OrderCard1(
                             Text(
                                 "${cartItems.quantity}",
                                 style = AppTheme.textStyles.regular.regular,
-                                color = AppTheme.colors.titleText,
+                                color = AppTheme.colors.white,
                             )
                             Spacer(Modifier.weight(1f))
                             Text(
                                 "${cartItems.productPrice}",
                                 style = AppTheme.textStyles.regular.regular,
-                                color = AppTheme.colors.titleText
+                                color = AppTheme.colors.white
                             )
                         }
                     }
@@ -369,13 +343,13 @@ fun OrderCard1(
                     Text(
                         "Total Amount",
                         style = AppTheme.textStyles.regular.regular,
-                        color = AppTheme.colors.titleText
+                        color = AppTheme.colors.white
                     )
                     Spacer(Modifier.weight(1f))
                     Text(
                         "₹ $totalPrice",
                         style = AppTheme.textStyles.regular.regular,
-                        color = AppTheme.colors.titleText
+                        color = AppTheme.colors.white
                     )
                 }
                 Divider(
@@ -392,7 +366,7 @@ fun OrderCard1(
                     Text(
                         "$orderDate",
                         style = AppTheme.textStyles.regular.regular,
-                        color = AppTheme.colors.titleText
+                        color = AppTheme.colors.white
                     )
                     Spacer(Modifier.weight(1f))
                     Text(

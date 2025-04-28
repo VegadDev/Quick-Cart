@@ -63,11 +63,11 @@ fun IntroScreen(interActor: IntroInterActor) {
                 ) {
                     Text("Get your groceries",
                         style = AppTheme.textStyles.extraBold.largeTitle,
-                        color = AppTheme.colors.titleText
+                        color = AppTheme.colors.white
                     )
                     Text("delivered to your home",
                         style = AppTheme.textStyles.extraBold.largeTitle,
-                        color = AppTheme.colors.titleText
+                        color = AppTheme.colors.white
                     )
                     Text("The best delivery app in town for",
                         style = AppTheme.textStyles.medium.small,

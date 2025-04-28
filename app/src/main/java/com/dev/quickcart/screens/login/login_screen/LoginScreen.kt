@@ -95,12 +95,12 @@ fun LoginScreen(interActor: LoginInterActor, uiState: LoginUiState) {
             Spacer(Modifier.size(30.dp))
             Text(
                 "Enter your mobile",
-                color = AppTheme.colors.titleText,
+                color = AppTheme.colors.white,
                 style = AppTheme.textStyles.bold.largeTitle
             )
             Text(
                 "number",
-                color = AppTheme.colors.titleText,
+                color = AppTheme.colors.white,
                 style = AppTheme.textStyles.bold.largeTitle
             )
             Spacer(Modifier.size(10.dp))
@@ -134,7 +134,7 @@ fun LoginScreen(interActor: LoginInterActor, uiState: LoginUiState) {
                     Text(
                         "+91  ",
                         style = AppTheme.textStyles.extraBold.large,
-                        color = AppTheme.colors.titleText,
+                        color = AppTheme.colors.white,
                         modifier = Modifier.padding(start = 13.dp)
                     )
                 },
@@ -205,7 +205,7 @@ fun LoginScreen(interActor: LoginInterActor, uiState: LoginUiState) {
             uiState.userEmail?.let { email ->
                 Text(
                     text = "Signed in as: $email",
-                    color = AppTheme.colors.titleText,
+                    color = AppTheme.colors.white,
                     style = AppTheme.textStyles.bold.regular,
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
@@ -252,7 +252,7 @@ fun OtpPopup(onDismiss: () -> Unit, onOtpVerify: () -> Unit) {
                 Text(
                     text = "Enter OTP",
                     style = AppTheme.textStyles.bold.largeTitle,
-                    color = AppTheme.colors.titleText
+                    color = AppTheme.colors.white
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(

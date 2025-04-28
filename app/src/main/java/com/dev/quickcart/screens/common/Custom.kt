@@ -50,6 +50,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
@@ -76,9 +77,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.dev.quickcart.R
 import com.dev.quickcart.data.model.UserAddress
@@ -173,12 +176,12 @@ fun AddButton(
                         icon = R.drawable.ic_add,
                         modifier = Modifier.padding(5.dp),
                         imageModifier = Modifier.size(30.dp),
-                        colorFilter = ColorFilter.tint(AppTheme.colors.titleText)
+                        colorFilter = ColorFilter.tint(AppTheme.colors.white)
                     )
                 }
                 CircularProgressIndicator(
                     modifier = Modifier.size(34.dp),
-                    color = AppTheme.colors.titleText
+                    color = AppTheme.colors.white
                 )
             }
         } else {
@@ -192,7 +195,7 @@ fun AddButton(
                     icon = R.drawable.ic_add,
                     modifier = Modifier.padding(5.dp),
                     imageModifier = Modifier.size(32.dp),
-                    colorFilter = ColorFilter.tint(AppTheme.colors.titleText)
+                    colorFilter = ColorFilter.tint(AppTheme.colors.white)
                 )
             }
         }
@@ -368,7 +371,7 @@ fun MyDropDown1(
                                     Text(
                                         text = cleanItem,
                                         style = AppTheme.textStyles.bold.large,
-                                        color = if (selectedItem == cleanItem) AppTheme.colors.primary else AppTheme.colors.titleText,
+                                        color = if (selectedItem == cleanItem) AppTheme.colors.primary else AppTheme.colors.white,
                                         modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp)
                                     )
                                 }
@@ -416,7 +419,7 @@ fun MyDropDown1(
             Text(
                 text = if (selectedItem.isEmpty()) "Select Address" else selectedItem,
                 style = AppTheme.textStyles.bold.regular,
-                color = AppTheme.colors.titleText
+                color = AppTheme.colors.white
             )
             Spacer(modifier = Modifier.width(4.dp))
             Icon(
@@ -514,13 +517,13 @@ fun MyDropDown(
                                 Text(
                                     text = cleanCategory,
                                     style = AppTheme.textStyles.bold.large,
-                                    color = if (selectedItem == cleanCategory) AppTheme.colors.primary else AppTheme.colors.titleText
+                                    color = if (selectedItem == cleanCategory) AppTheme.colors.primary else AppTheme.colors.white
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = "${address.houseAddress}, ${address.areaAddress}",
                                     style = AppTheme.textStyles.regular.regular,
-                                    color = AppTheme.colors.titleText
+                                    color = AppTheme.colors.white
                                 )
                             }
                         }
@@ -556,12 +559,158 @@ fun MyDropDown(
             Text(
                 text = if (selectedItem.isEmpty()) "Select Address" else selectedItem,
                 style = AppTheme.textStyles.bold.regular,
-                color = AppTheme.colors.titleText
+                color = AppTheme.colors.white
             )
             Spacer(modifier = Modifier.width(4.dp))
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,
                 contentDescription = null
+            )
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyDropDown5(
+    modifier: Modifier = Modifier,
+    items: List<UserAddress>,
+    initialItem: String = "",
+    onItemSelected: (String) -> Unit = {},
+    onNewAddress: () -> Unit = {},
+    title: String = "",
+    showBottomSheet: Boolean = false
+) {
+    // State for bottom sheet visibility
+    var isBottomSheetVisible by remember { mutableStateOf(showBottomSheet) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    // State for the selected item
+    var selectedItem by remember { mutableStateOf(initialItem) }
+
+    // ModalBottomSheet for address list
+    if (isBottomSheetVisible) {
+        ModalBottomSheet(
+            onDismissRequest = { isBottomSheetVisible = false },
+            sheetState = sheetState
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = title,
+                        style = AppTheme.textStyles.bold.largeTitle,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    Spacer(Modifier.weight(1f))
+                    if (title.equals("Select Address", ignoreCase = true)) {
+                        Text(
+                            text = "+ Add new address",
+                            style = AppTheme.textStyles.regular.regular,
+                            color = AppTheme.colors.primary,
+                            modifier = Modifier.clickable {
+                                onNewAddress()
+                                isBottomSheetVisible = false
+                            }
+                        )
+                    }
+                }
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(7.dp)
+                ) {
+                    items(items) { address ->
+                        val cleanCategory = address.category.trim()
+                        CustomCard(
+                            border = if (selectedItem == cleanCategory) BorderStroke(
+                                1.dp,
+                                AppTheme.colors.primary
+                            ) else null,
+                            onClick = {
+                                selectedItem = cleanCategory
+                                Log.d("MyDropDown", "Selected category: '$cleanCategory'")
+                                onItemSelected(cleanCategory)
+                                isBottomSheetVisible = false
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(6.dp),
+                            cardCorner = 14
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(15.dp)
+                            ) {
+                                Text(
+                                    text = cleanCategory,
+                                    style = AppTheme.textStyles.bold.large,
+                                    color = if (selectedItem == cleanCategory) AppTheme.colors.primary else AppTheme.colors.white
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "${address.houseAddress}, ${address.areaAddress}",
+                                    style = AppTheme.textStyles.regular.regular,
+                                    color = AppTheme.colors.white
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Dropdown trigger styled to match the image
+    Surface(
+        modifier = modifier
+            .width(130.dp)
+            .height(40.dp)
+            .clickable { isBottomSheetVisible = true },
+        shape = RoundedCornerShape(20.dp),
+        color = AppTheme.colors.address_bg,
+        contentColor = AppTheme.colors.address_text,
+        //border = BorderStroke(0.2.dp, AppTheme.colors.primary)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 12.dp)
+                .fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.location),
+                    contentDescription = "Location Icon",
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                // Selected item or placeholder text
+                Text(
+                    text = if (selectedItem.isEmpty()) "Select Address" else selectedItem,
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                )
+            }
+            // Downward caret icon
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = "Dropdown Arrow",
+                modifier = Modifier.size(24.dp),
+                tint = AppTheme.colors.address_text
             )
         }
     }
@@ -1068,5 +1217,46 @@ fun DashedLine(
             )
         )
     }
+}
+
+
+@Composable
+fun TopBar(
+    onBackClick: () -> Unit,
+    title: String,
+    modifier: Modifier = Modifier
+) {
+
+    Row(
+        modifier = Modifier.fillMaxWidth().background(AppTheme.colors.topbar_bg).height(60.dp).padding(start = 20.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+
+        CustomCard(
+            cardColor = AppTheme.colors.back_bg,
+            cardCorner = 50,
+            onClick = { onBackClick() },
+            modifier = Modifier.size(35.dp)
+        ) {
+            Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                CustomIcon(
+                    icon = R.drawable.ic_back_arrow,
+                    modifier = Modifier.padding(end = 3.dp),
+                    imageModifier = Modifier.size(20.dp),
+                    colorFilter = ColorFilter.tint(AppTheme.colors.onPrimary)
+                )
+            }
+        }
+        Text(
+            title,
+            style = AppTheme.textStyles.extraBold.largeTitle,
+            color = AppTheme.colors.onPrimary,
+            fontSize = 22.sp,
+            modifier = Modifier.padding(start = 20.dp)
+        )
+
+    }
+
+
 }
 

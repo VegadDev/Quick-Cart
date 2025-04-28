@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -53,7 +54,7 @@ import com.dev.quickcart.screens.common.AddButton
 import com.dev.quickcart.screens.common.CustomCard
 import com.dev.quickcart.screens.common.CustomIcon
 import com.dev.quickcart.screens.common.CustomTextField
-import com.dev.quickcart.screens.common.MyDropDown
+import com.dev.quickcart.screens.common.MyDropDown5
 import com.dev.quickcart.screens.common.NewCard
 import com.dev.quickcart.screens.common.ShimmerListItem
 import com.dev.quickcart.ui.theme.AppTheme
@@ -82,55 +83,39 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
             .fillMaxSize()
     ) {
 
+        Column {
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(AppTheme.colors.background)
-        ) {
-
-            item {
-
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(70.dp),
+                elevation = CardDefaults.cardElevation(20.dp),
+                shape = RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp),
+                colors = CardDefaults.cardColors(containerColor = AppTheme.colors.cardBackgroundColor)
+            ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(26.dp)
+                    modifier = Modifier.fillMaxSize().padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    AsyncImage(
-                        model = uiState.userImage ?: R.drawable.ic_user,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .clickable{ interActor.gotoProfile() },
-                        contentScale = ContentScale.Crop,
-                        placeholder = painterResource(R.drawable.ic_user),
-                        error = painterResource(R.drawable.ic_user),
-                        filterQuality = FilterQuality.Low
+                    CustomIcon(
+                        icon = R.drawable.new_logo,
+                        modifier = Modifier.padding(end = 8.dp),
+                        imageModifier = Modifier.size(40.dp)
                     )
 
-                    Column(
-                        modifier = Modifier
-                            .padding(start = 16.dp)
-                            .height(50.dp),
-                        verticalArrangement = Arrangement.SpaceAround
-                    ) {
-                        Text(
-                            "Good Morning",
-                            style = AppTheme.textStyles.bold.regular,
-                            color = AppTheme.colors.textColorLight,
-                        )
-                        Text(
-                            text = uiState.userName,
-                            style = AppTheme.textStyles.bold.large,
-                            color = AppTheme.colors.titleText
-                        )
-                    }
-
+                    Text(
+                        "Quick",
+                        color = AppTheme.colors.primaryText,
+                        style = AppTheme.textStyles.bold.largeTitle
+                    )
+                    Text(
+                        "Cart",
+                        color = AppTheme.colors.brandText,
+                        style = AppTheme.textStyles.bold.largeTitle
+                    )
                     Spacer(Modifier.weight(1f))
-
-
-                    MyDropDown(
+                    MyDropDown5(
                         items = uiState.addresses,
                         initialItem = selectedAddress ?: "",
                         onItemSelected = { selected ->
@@ -140,181 +125,204 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
                         },
                         title = "Select Address",
                         showBottomSheet = shouldShowBottomSheet,
-                        onNewAddress = { interActor.gotoAddAddress() }
+                        onNewAddress = { interActor.gotoAddAddress() },
+                        modifier = Modifier.padding(end = 10.dp)
+                    )
+
+                    AsyncImage(
+                        model = uiState.userImage ?: R.drawable.ic_user,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(45.dp)
+                            .clip(CircleShape)
+                            .clickable { interActor.gotoProfile() },
+                        contentScale = ContentScale.Crop,
+                        placeholder = painterResource(R.drawable.ic_user),
+                        error = painterResource(R.drawable.ic_user),
+                        filterQuality = FilterQuality.Low
                     )
 
                 }
-
-
-                CustomTextField(
-                    value = uiState.searchInput,
-                    onValueChange = { interActor.updateSearchInput(it) },
-                    onSearch = { },
-                    hint = "Search...",
-                    cornerShape = 40,
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    leadingIcon = {
-                        CustomIcon(
-                            icon = R.drawable.ic_search,
-                            modifier = Modifier.padding(start = 8.dp),
-                            imageModifier = Modifier.size(30.dp),
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Search,
-                    )
-                )
-
-                Spacer(Modifier.height(20.dp))
-                val banners = listOf(
-                    R.drawable.banner_1,
-                    R.drawable.banner_2,
-                    R.drawable.banner_1
-                )
-
-                BannerCarousel(banners)
-
-
-
-                Row(
-                    modifier = Modifier.padding(20.dp)
-                ) {
-                    Text(
-                        "Best Selling 🔥",
-                        style = AppTheme.textStyles.extraBold.largeTitle,
-                        color = AppTheme.colors.titleText,
-                        fontSize = 19.sp
-                    )
-                    Spacer(Modifier.weight(1f))
-                    Text(
-                        "See all",
-                        style = AppTheme.textStyles.regular.regular,
-                        color = AppTheme.colors.primary,
-                    )
-                }
-
-                if (uiState.isLoading){
-                    ShimmerListItem(uiState.isLoading)
-                }
-                else {
-                    LazyRow(
-                        modifier = Modifier.padding(horizontal = 20.dp),
-                    ) {
-                        items(uiState.productList) { item ->
-                            val isLoading = loadingStates[item.prodId.toString()] == true
-                            ProductCard(
-                                product = item,
-                                onClick = {
-                                    interActor.gotoProductPage(item.prodId)
-                                },
-                                isLoading = isLoading,
-                                addToCard = {
-                                    coroutineScope.launch {
-                                        uiState.isLoadingOnATC = false
-                                        interActor.addToCart(item)
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-
-
-                Row(
-                    modifier = Modifier.padding(20.dp)
-                ) {
-                    Text(
-                        "Vegetables",
-                        style = AppTheme.textStyles.extraBold.largeTitle,
-                        color = AppTheme.colors.titleText,
-                        fontSize = 25.sp
-                    )
-                    Spacer(Modifier.weight(1f))
-                    Text(
-                        "See all",
-                        style = AppTheme.textStyles.regular.regular,
-                        color = AppTheme.colors.primary,
-                    )
-                }
-
-                val vegetablesProducts = uiState.productList.filter { it.productCategory == "Vegetable" }
-
-
-                if (uiState.isLoading){
-                    ShimmerListItem(uiState.isLoading)
-                }
-                else {
-                    LazyRow(
-                        modifier = Modifier.padding(horizontal = 20.dp),
-                    ) {
-                        items(vegetablesProducts) { item ->
-                            val isLoading = loadingStates[item.prodId.toString()] == true
-                            ProductCard(
-                                product = item,
-                                onClick = {
-                                        interActor.gotoProductPage(item.prodId)
-                                },
-                                isLoading = isLoading,
-                                addToCard = {
-                                    coroutineScope.launch {
-                                        uiState.isLoadingOnATC = false
-                                        interActor.addToCart(item)
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-
-
-                Row(
-                    modifier = Modifier.padding(20.dp)
-                ) {
-                    Text(
-                        "Fruits",
-                        style = AppTheme.textStyles.extraBold.largeTitle,
-                        color = AppTheme.colors.titleText,
-                        fontSize = 25.sp
-                    )
-                    Spacer(Modifier.weight(1f))
-                    Text(
-                        "See all",
-                        style = AppTheme.textStyles.regular.regular,
-                        color = AppTheme.colors.primary,
-                    )
-                }
-
-                val fruitsProducts = uiState.productList.filter { it.productCategory == "Fruits" }
-
-                if (uiState.isLoading){
-                    ShimmerListItem(uiState.isLoading)
-                }
-                else {
-                    LazyRow(
-                        modifier = Modifier.padding(horizontal = 20.dp),
-                    ) {
-                        items(fruitsProducts) { item ->
-                            val isLoading = loadingStates[item.prodId.toString()] == true
-                            ProductCard(
-                                product = item,
-                                onClick = {
-                                    interActor.gotoProductPage(item.prodId)
-                                },
-                                isLoading = isLoading,
-                                addToCard = {
-                                    coroutineScope.launch {
-                                        interActor.addToCart(item)
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-
-                Spacer(Modifier.size(100.dp))
             }
 
+            Spacer(Modifier.height(7.dp))
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(AppTheme.colors.background)
+            ) {
 
+                item {
+
+                    CustomTextField(
+                        value = uiState.searchInput,
+                        onValueChange = { interActor.updateSearchInput(it) },
+                        onSearch = { },
+                        hint = "Search...",
+                        cornerShape = 40,
+                        modifier = Modifier.padding(horizontal = 20.dp).padding(8.dp),
+                        leadingIcon = {
+                            CustomIcon(
+                                icon = R.drawable.ic_search,
+                                modifier = Modifier.padding(start = 8.dp),
+                                imageModifier = Modifier.size(30.dp),
+                            )
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Search,
+                        )
+                    )
+
+                    Spacer(Modifier.height(20.dp))
+                    val banners = listOf(
+                        R.drawable.banner_1,
+                        R.drawable.banner_2,
+                        R.drawable.banner_1
+                    )
+
+                    BannerCarousel(banners)
+
+
+
+                    Row(
+                        modifier = Modifier.padding(20.dp)
+                    ) {
+                        Text(
+                            "Best Selling 🔥",
+                            style = AppTheme.textStyles.extraBold.largeTitle,
+                            color = AppTheme.colors.white,
+                            fontSize = 19.sp
+                        )
+                        Spacer(Modifier.weight(1f))
+                        Text(
+                            "See all",
+                            style = AppTheme.textStyles.regular.regular,
+                            color = AppTheme.colors.primary,
+                        )
+                    }
+
+                    if (uiState.isLoading) {
+                        ShimmerListItem(uiState.isLoading)
+                    } else {
+                        LazyRow(
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                        ) {
+                            items(uiState.productList) { item ->
+                                val isLoading = loadingStates[item.prodId.toString()] == true
+                                ProductCard(
+                                    product = item,
+                                    onClick = {
+                                        interActor.gotoProductPage(item.prodId)
+                                    },
+                                    isLoading = isLoading,
+                                    addToCard = {
+                                        coroutineScope.launch {
+                                            uiState.isLoadingOnATC = false
+                                            interActor.addToCart(item)
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+
+                    Row(
+                        modifier = Modifier.padding(20.dp)
+                    ) {
+                        Text(
+                            "Vegetables",
+                            style = AppTheme.textStyles.extraBold.largeTitle,
+                            color = AppTheme.colors.white,
+                            fontSize = 25.sp
+                        )
+                        Spacer(Modifier.weight(1f))
+                        Text(
+                            "See all",
+                            style = AppTheme.textStyles.regular.regular,
+                            color = AppTheme.colors.primary,
+                        )
+                    }
+
+                    val vegetablesProducts =
+                        uiState.productList.filter { it.productCategory == "Vegetable" }
+
+
+                    if (uiState.isLoading) {
+                        ShimmerListItem(uiState.isLoading)
+                    } else {
+                        LazyRow(
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                        ) {
+                            items(vegetablesProducts) { item ->
+                                val isLoading = loadingStates[item.prodId.toString()] == true
+                                ProductCard(
+                                    product = item,
+                                    onClick = {
+                                        interActor.gotoProductPage(item.prodId)
+                                    },
+                                    isLoading = isLoading,
+                                    addToCard = {
+                                        coroutineScope.launch {
+                                            uiState.isLoadingOnATC = false
+                                            interActor.addToCart(item)
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+
+                    Row(
+                        modifier = Modifier.padding(20.dp)
+                    ) {
+                        Text(
+                            "Fruits",
+                            style = AppTheme.textStyles.extraBold.largeTitle,
+                            color = AppTheme.colors.white,
+                            fontSize = 25.sp
+                        )
+                        Spacer(Modifier.weight(1f))
+                        Text(
+                            "See all",
+                            style = AppTheme.textStyles.regular.regular,
+                            color = AppTheme.colors.primary,
+                        )
+                    }
+
+                    val fruitsProducts =
+                        uiState.productList.filter { it.productCategory == "Fruits" }
+
+                    if (uiState.isLoading) {
+                        ShimmerListItem(uiState.isLoading)
+                    } else {
+                        LazyRow(
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                        ) {
+                            items(fruitsProducts) { item ->
+                                val isLoading = loadingStates[item.prodId.toString()] == true
+                                ProductCard(
+                                    product = item,
+                                    onClick = {
+                                        interActor.gotoProductPage(item.prodId)
+                                    },
+                                    isLoading = isLoading,
+                                    addToCard = {
+                                        coroutineScope.launch {
+                                            interActor.addToCart(item)
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.size(100.dp))
+                }
+
+
+            }
         }
         val selectedCategory = uiState.selectedAddressCategory ?: initialCategory
         CustomCard(
@@ -361,8 +369,16 @@ fun HomeScreen(interActor: HomeInterActor, uiState: HomeUiState) {
             }
 
         }
+
     }
 }
+
+
+
+
+
+
+
 
 
 @Composable
@@ -416,7 +432,7 @@ fun ProductCard(
                 Text(
                     text = product.prodName,
                     style = AppTheme.textStyles.bold.large,
-                    color = AppTheme.colors.titleText
+                    color = AppTheme.colors.white
                 )
                 Row(
                     modifier = Modifier

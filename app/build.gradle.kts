@@ -23,7 +23,7 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("D:/Android Key Store/QuickCart_key.jks")
+            storeFile = file("D:/Android Key Store/QuickCart_Apk.jks")
             storePassword = "Devdatt@#12"
             keyAlias = "quickcart"
             keyPassword = "Devdatt@#12"

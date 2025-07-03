@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "40790203605-9ulupn3qdgutn1ajpe0f0el8ooud1md3.apps.googleusercontent.com",
+          "client_id": "40790203605-96vektndrf2juig00v1up125346btbeq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.dev.quickcart",
-            "certificate_hash": "e160706a9909871a096387db7e7779537c281e63"
+            "certificate_hash": "418a65c09e9b7ed4022c68a00861f37c330c0d9a"
           }
         },
         {
